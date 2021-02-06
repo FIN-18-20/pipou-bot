@@ -7,10 +7,9 @@ export default new Command({
     name: 'ls',
     description: 'Leaguestats.gg',
     async handle({ message }) {
-        const args = message.content.split(' ');
-        const command = args.shift()!;
+        const args = message.content.split(' ').shift();
 
-        if (args.length !== 1) return;
+        if (args === undefined || args.length !== 1) return;
 
         axios.post('https://api.leaguestats.gg/summoner/basic', {
             summoner: args[0],
@@ -21,7 +20,7 @@ export default new Command({
                     message.channel.send('Summoner not found !');
                     return;
                 }
-                let embed = new MessageEmbed()
+                const embed = new MessageEmbed()
                     .setColor('#0099ff')
                     .setURL('https://leaguestats.gg/summoner/euw/' + args[0])
                     .setAuthor('Leaguestats.gg', 'https://leaguestats.gg/favicon-16x16.png', 'https://leaguestats.gg/')
