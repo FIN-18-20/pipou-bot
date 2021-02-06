@@ -37,9 +37,10 @@ export class Command extends Base {
 
   async _messageHandler(message: Message): Promise<void> {
     if (this.bot === undefined) return;
-    if (!message.content.includes(this.delimiter + this.name)) {
+    if (!message.content.includes(this.delimiter + this.name) || message.author.bot) {
       return;
     }
+    message.content = message.content.slice(this.delimiter.length).trim();
 
     const client = this.bot.client;
     if (
