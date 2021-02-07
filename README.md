@@ -1,4 +1,4 @@
-# Bot Discord de la communauté
+# Pipou bot
 
 ## Développement
 
@@ -6,6 +6,7 @@
 
 - Node.js v14
 - npm v6
+- Redis
 
 ### Préparation de l'environnement
 
@@ -15,10 +16,10 @@ Installez les dépendances avec npm:
 npm ci
 ```
 
-Créez un fichier `.env` avec votre token de bot:
+Copiez le fichier `.env.example` en ajoutant le token de bot et l'adresse de connexion redis:
 
-```env
-DISCORD_TOKEN=votretoken
+```console
+cp.env.example .env
 ```
 
 ### Exécution du bot
