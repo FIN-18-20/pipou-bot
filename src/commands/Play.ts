@@ -22,8 +22,8 @@ interface queueContruct {
 
 export default new Command({
   enabled: true,
-  name: 'mousik',
-  description: 'Play some mousik',
+  name: 'play',
+  description: 'Play youtube video',
   async handle({ message, logger }) {
     const args = message.content.split(' ');
     if (!message.member || !message.client.user || !message.guild) return;
