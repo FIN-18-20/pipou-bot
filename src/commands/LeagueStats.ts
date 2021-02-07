@@ -30,6 +30,7 @@ export default new Command({
   enabled: true,
   name: 'ls',
   description: 'Leaguestats.gg',
+  alias: ['leaguestats', 'league', 'riot', 'rito'],
   async handle({ message }) {
     const args = message.content.split(' ').slice(1);
 

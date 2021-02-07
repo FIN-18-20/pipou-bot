@@ -7,6 +7,7 @@ import { findTextChannelByName } from './helpers';
 export type CommandHandler = (context: CommandContext) => Promise<void>;
 
 export interface CommandConfig extends BaseConfig {
+  alias?: Array<string>;
   channelName?: string;
   handle: CommandHandler;
 }
@@ -20,6 +21,7 @@ export interface CommandContext {
 
 export class Command extends Base {
   private readonly delimiter = '!';
+  private readonly alias?: Array<string>;
   private readonly channelName?: string;
   private readonly handler: CommandHandler;
   private bot: Bot | undefined;
@@ -30,17 +32,25 @@ export class Command extends Base {
     if (config.channelName) {
       this.channelName = config.channelName;
     }
+    if (config.alias) {
+      this.alias = config.alias;
+    }
 
     this.handler = config.handle;
     this._messageHandler = this._messageHandler.bind(this);
   }
 
   async _messageHandler(message: Message): Promise<void> {
+    message.content = message.content.trim();
     if (this.bot === undefined) return;
-    if (!message.content.includes(this.delimiter + this.name) || message.author.bot) {
+    if (!message.content.startsWith(this.delimiter) || message.author.bot) {
       return;
     }
-    message.content = message.content.slice(this.delimiter.length).trim();
+
+    const commandName = message.content.slice(1).split(' ')[0].toLowerCase();
+    if (commandName !== this.name && !this.alias?.includes(commandName)) {
+      return;
+    }
 
     const client = this.bot.client;
     if (

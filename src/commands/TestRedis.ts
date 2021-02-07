@@ -8,6 +8,6 @@ export default new Command({
   async handle({ message }) {
     const oldMsg = await Redis.get('yolo');
     message.channel.send("Contenu de l'ancien message: " + oldMsg);
-    await Redis.set('yolo', message.content);
+    await Redis.set('yolo', message.content.slice(this.name.length + 2));
   },
 });
