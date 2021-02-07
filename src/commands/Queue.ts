@@ -29,7 +29,7 @@ export default new Command({
     if (nbSongsInQueue > 0) {
       description.push('__Up next:__');
       for (let i = 0; i < Math.min(songsPerPage, nbSongsInQueue); i++) {
-        description.push(`**${i + 1}.** ${serverQueue.songs[i].title}`);
+        description.push(`**${i + 1}.** ${serverQueue.songs[i + 1].title}`);
       }
       description.push(
         `\n**${nbSongsInQueue} song${

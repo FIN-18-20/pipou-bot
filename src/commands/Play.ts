@@ -11,7 +11,7 @@ import {
   VoiceConnection,
 } from 'discord.js';
 
-interface queueContruct {
+export interface queueContruct {
   textChannel: TextChannel | DMChannel | NewsChannel;
   voiceChannel: VoiceChannel;
   connection: null | VoiceConnection;
