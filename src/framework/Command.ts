@@ -24,6 +24,12 @@ export interface CommandContext {
   logger: Logger;
 }
 
+export interface PublicCommand {
+  name: string,
+  description: string,
+  alias?: Array<string>;
+}
+
 export class Command extends Base {
   private readonly delimiter = '!';
   private readonly alias?: Array<string>;

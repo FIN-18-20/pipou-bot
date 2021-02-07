@@ -5,7 +5,7 @@ import path from 'path';
 import { Client } from 'discord.js';
 import pino from 'pino';
 
-import { Command } from './Command';
+import { Command, PublicCommand } from './Command';
 import { Cron } from './Cron';
 import { Base, BaseConfig } from './Base';
 import { FormatChecker } from './FormatChecker';
@@ -37,9 +37,9 @@ type Constructor<T extends Base, U extends BaseConfig> = {
 export class Bot {
   private readonly token?: string;
   private _client: Client | null;
-  private commands: Command[] = [];
-  private crons: Cron[] = [];
-  private formatCheckers: FormatChecker[] = [];
+  private _commands: Command[] = [];
+  private _crons: Cron[] = [];
+  private _formatCheckers: FormatChecker[] = [];
 
   public readonly logger: pino.Logger;
 
@@ -49,13 +49,17 @@ export class Bot {
     this.logger = pino();
 
     if (options.commands) {
-      this.commands = this.loadDirectory(options.commands, 'commands', Command);
+      this._commands = this.loadDirectory(
+        options.commands,
+        'commands',
+        Command,
+      );
     }
     if (options.crons) {
-      this.crons = this.loadDirectory(options.crons, 'crons', Cron);
+      this._crons = this.loadDirectory(options.crons, 'crons', Cron);
     }
     if (options.formatCheckers) {
-      this.formatCheckers = this.loadDirectory(
+      this._formatCheckers = this.loadDirectory(
         options.formatCheckers,
         'format-checkers',
         FormatChecker,
@@ -108,27 +112,27 @@ export class Bot {
   }
 
   private startCommands() {
-    this.commands.forEach((command) => command.start(this));
+    this._commands.forEach((command) => command.start(this));
   }
 
   private stopCommands() {
-    this.commands.forEach((command) => command.stop(this));
+    this._commands.forEach((command) => command.stop(this));
   }
 
   private startCrons() {
-    this.crons.forEach((cron) => cron.start(this));
+    this._crons.forEach((cron) => cron.start(this));
   }
 
   private stopCrons() {
-    this.crons.forEach((cron) => cron.stop());
+    this._crons.forEach((cron) => cron.stop());
   }
 
   private startFormatCheckers() {
-    this.formatCheckers.forEach((formatChecker) => formatChecker.start(this));
+    this._formatCheckers.forEach((formatChecker) => formatChecker.start(this));
   }
 
   private stopFormatCheckers() {
-    this.formatCheckers.forEach((formatChecker) => formatChecker.stop(this));
+    this._formatCheckers.forEach((formatChecker) => formatChecker.stop(this));
   }
 
   /**
@@ -141,6 +145,13 @@ export class Bot {
     }
 
     return this._client;
+  }
+
+  public get commands(): Array<PublicCommand> {
+    return this._commands.map((command) => ({
+      name: command.name,
+      description: command.description,
+    }));
   }
 
   /**

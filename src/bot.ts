@@ -7,7 +7,7 @@ import { Bot } from './framework';
 
 Dotenv.config();
 
-const bot = new Bot({
+export const bot = new Bot({
   token: process.env.DISCORD_TOKEN,
   commands: path.join(__dirname, 'commands'),
   // crons: path.join(__dirname, 'crons'),
