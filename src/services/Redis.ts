@@ -4,7 +4,7 @@ import redis, { RedisClient } from 'redis';
 class Redis {
   private _client: RedisClient | null;
 
-  public get: (key: string) => Promise<unknown>;
+  public get: (key: string) => Promise<string | null>;
   public set: (key: string, value: string) => Promise<unknown>;
 
   constructor() {

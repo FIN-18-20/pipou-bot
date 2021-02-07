@@ -16,15 +16,19 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@discordjs/opus": "^0.4.0",
     "@lukeed/uuid": "^1.0.1",
     "cron": "^1.8.2",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
     "emoji-regex": "^9.2.0",
     "got": "^11.8.1",
+    "ffmpeg": "0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "make-promises-safe": "^5.1.0",
+    "redis": "^3.0.2",
     "pino": "^6.7.0",
-    "redis": "^3.0.2"
+    "ytdl-core": "^4.4.5"
   },
   "devDependencies": {
     "@types/cron": "^1.7.2",
