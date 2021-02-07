@@ -26,9 +26,7 @@ export default new Command({
   description: 'Play some mousik',
   async handle({ message, logger }) {
     const args = message.content.split(' ');
-
     if (!message.member || !message.client.user || !message.guild) return;
-    if (args.length < 2) return;
 
     const validate = ytdl.validateURL(args[1]);
     if (!validate) {
@@ -44,7 +42,6 @@ export default new Command({
       return;
     }
 
-    console.log('recherche: ', args[1]);
     const songInfo = await ytdl.getInfo(args[1]);
     const song = {
       title: songInfo.videoDetails.title,
@@ -94,7 +91,7 @@ async function play(message: Message, song: Record<string, string>) {
   }
 
   const dispatcher = serverQueue.connection
-    .play(ytdl(song.url))
+    .play(ytdl(song.url, { filter: 'audioonly' }))
     .on('finish', () => {
       serverQueue.songs.shift();
       play(message, serverQueue.songs[0]);
