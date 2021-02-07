@@ -1,5 +1,6 @@
 import uuid from '@lukeed/uuid';
 import { Message } from 'discord.js';
+import { Logger } from 'pino';
 import { Base, BaseConfig } from './Base';
 import { Bot } from './Bot';
 import { findTextChannelByName } from './helpers';
@@ -17,6 +18,10 @@ export interface CommandContext {
    * discord.js Message
    */
   message: Message;
+  /**
+   * Pino logger.
+   */
+  logger: Logger;
 }
 
 export class Command extends Base {
@@ -67,7 +72,7 @@ export class Command extends Base {
     });
 
     try {
-      await this.handler({ message });
+      await this.handler({ message, logger });
     } catch (error) {
       logger.fatal('error in command');
     }
