@@ -1,6 +1,6 @@
 import Store from '../services/Store';
 import { Command, shuffle } from '../framework';
-import { queueContruct } from './Play';
+import { queueContruct } from '../services/Music';
 
 export default new Command({
   enabled: true,

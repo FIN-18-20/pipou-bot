@@ -1,5 +1,6 @@
 import Store from '../services/Store';
 import { Command } from '../framework';
+import Music from '../services/Music';
 
 export default new Command({
   enabled: true,
@@ -15,8 +16,7 @@ export default new Command({
       );
       return;
     }
-    serverQueue.songs = [];
-    serverQueue.connection.dispatcher.end();
+    Music.stop(serverQueue);
     message.channel.send('Music has been stopped.');
   },
 });
