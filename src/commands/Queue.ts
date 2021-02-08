@@ -1,5 +1,5 @@
 import Store from '../services/Store';
-import { Command } from '../framework';
+import { Command, secToTime } from '../framework';
 import { MessageEmbed } from 'discord.js';
 
 export default new Command({
@@ -24,17 +24,30 @@ export default new Command({
       .setColor('#FBBF24')
       .setTitle('Songs in queue');
 
-    const description = ['__Now Playing:__', serverQueue.songs[0].title + '\n'];
+    const nowPlaying = serverQueue.songs[0];
+    const description = [
+      '__Now Playing:__',
+      `[${nowPlaying.title}](${nowPlaying.url}) | \`${secToTime(
+        nowPlaying.duration,
+      )}\` \n`,
+    ];
 
     if (nbSongsInQueue > 0) {
+      let totalDuration = 0;
       description.push('__Up next:__');
       for (let i = 0; i < Math.min(songsPerPage, nbSongsInQueue); i++) {
-        description.push(`**${i + 1}.** ${serverQueue.songs[i + 1].title}`);
+        const song = serverQueue.songs[i + 1];
+        totalDuration += song.duration;
+        description.push(
+          `**${i + 1}.** [${song.title}](${song.url}) | \`${secToTime(
+            song.duration,
+          )}\``,
+        );
       }
       description.push(
         `\n**${nbSongsInQueue} song${
           nbSongsInQueue > 1 ? 's' : ''
-        } in queue.**`,
+        } in queue | ${secToTime(totalDuration)}**`,
       );
       embed.setFooter(`Page ${pageNumber}/${pageTotal}`);
     }

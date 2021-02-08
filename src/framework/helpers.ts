@@ -9,6 +9,24 @@ export function findTextChannelByName(
   ) as TextChannel | undefined;
 }
 
+export function secToTime(sec: number): string {
+  let hour = 0;
+  let min = Math.floor(sec / 60);
+  if (min > 59) {
+    hour = Math.floor(min / 60);
+    min %= 60;
+  }
+
+  if (hour == 0) {
+    const newSec: number = Math.floor(sec - min * 60);
+    const newSecStr = newSec < 10 ? '0' + newSec : newSec;
+    return `${min}:${newSecStr}`;
+  }
+
+  const minStr = min < 10 ? '0' + min : min;
+  return `${hour}h${minStr}`;
+}
+
 export function shuffle<T>(array: Array<T>): Array<T> {
   let counter = array.length;
 

@@ -1,5 +1,7 @@
 import Store from '../services/Store';
-import { Command } from '../framework';
+import { Command, secToTime } from '../framework';
+import { MessageEmbed } from 'discord.js';
+import { queueContruct } from '../services/Music';
 
 export default new Command({
   enabled: true,
@@ -14,6 +16,18 @@ export default new Command({
       message.channel.send('There is nothing playing.');
       return;
     }
-    message.channel.send(`Now playing: ${serverQueue.songs[0].title}`);
+    const song = serverQueue.songs[0];
+    const streamTime = serverQueue.connection?.dispatcher.streamTime || 0;
+    const description = [
+      `[${song.title}](${song.url})`,
+      `\`${secToTime(streamTime / 1000)}/${secToTime(song.duration)}\``,
+    ];
+
+    const embed = new MessageEmbed()
+      .setColor('#FBBF24')
+      .setTitle('Now playing')
+      .setDescription(description.join('\n'));
+
+    message.channel.send(embed);
   },
 });

@@ -1,5 +1,7 @@
+import { queueContruct } from './Music';
+
 const Store = {
-  queue: new Map(),
+  queue: new Map<string, queueContruct>(),
 };
 
 export default Store;

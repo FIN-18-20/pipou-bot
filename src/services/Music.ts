@@ -9,11 +9,17 @@ import {
 } from 'discord.js';
 import Store from './Store';
 
+export interface Song {
+  title: string;
+  url: string;
+  duration: number;
+}
+
 export interface queueContruct {
   textChannel: TextChannel | DMChannel | NewsChannel;
   voiceChannel: VoiceChannel;
   connection: null | VoiceConnection;
-  songs: Array<Record<string, string>>;
+  songs: Array<Song>;
   volume: number;
   playing: boolean;
 }
@@ -33,14 +39,15 @@ class Music {
     Store.queue.set(message.guild!.id, queueContruct);
     return queueContruct;
   }
-  async getSongInfo(url: string) {
+  async getSongInfo(url: string): Promise<Song> {
     const songInfo = await ytdl.getInfo(url);
     return {
       title: songInfo.videoDetails.title,
       url: songInfo.videoDetails.video_url,
+      duration: Number(songInfo.videoDetails.lengthSeconds),
     };
   }
-  async play(message: Message, song: Record<string, string>): Promise<void> {
+  async play(message: Message, song: Song): Promise<void> {
     if (!message.guild) return;
     const serverQueue = Store.queue.get(message.guild.id);
     if (!serverQueue) {
