@@ -62,12 +62,7 @@ export default new Command({
     setTimeout(async () => {
       // Reset permissions
       for (const [, ch] of voiceChannels) {
-        ch.overwritePermissions([
-          {
-            id: member.id,
-            deny: [],
-          },
-        ]);
+        ch.permissionOverwrites.get(member.id)?.delete();
       }
 
       // Stop song
