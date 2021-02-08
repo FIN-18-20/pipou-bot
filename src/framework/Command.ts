@@ -25,8 +25,8 @@ export interface CommandContext {
 }
 
 export interface PublicCommand {
-  name: string,
-  description: string,
+  name: string;
+  description: string;
   alias?: Array<string>;
 }
 
