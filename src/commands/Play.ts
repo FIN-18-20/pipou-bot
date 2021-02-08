@@ -1,7 +1,7 @@
 import { Command } from '../framework';
 import ytdl from 'ytdl-core';
 import Store from '../services/Store';
-import Music, { queueContruct } from '../services/Music';
+import Music from '../services/Music';
 
 export default new Command({
   enabled: true,
@@ -17,7 +17,7 @@ export default new Command({
       return;
     }
 
-    const serverQueue: queueContruct = Store.queue.get(message.guild.id);
+    const serverQueue = Store.queue.get(message.guild.id);
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {

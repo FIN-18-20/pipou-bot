@@ -10,7 +10,7 @@ export default new Command({
     if (!message.guild) return;
 
     const serverQueue = Store.queue.get(message.guild.id);
-    if (!message.member?.voice.channel) {
+    if (!message.member?.voice.channel || !serverQueue) {
       message.channel.send(
         'You have to be in a voice channel to stop the music!',
       );

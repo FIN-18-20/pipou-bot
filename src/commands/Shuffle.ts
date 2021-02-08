@@ -1,6 +1,5 @@
 import Store from '../services/Store';
 import { Command, shuffle } from '../framework';
-import { queueContruct } from '../services/Music';
 
 export default new Command({
   enabled: true,
@@ -9,7 +8,7 @@ export default new Command({
   async handle({ message }) {
     if (!message.guild) return;
 
-    const serverQueue: queueContruct = Store.queue.get(message.guild.id);
+    const serverQueue = Store.queue.get(message.guild.id);
     if (!message.member?.voice.channel) {
       message.channel.send(
         'You have to be in a voice channel to skip the music!',

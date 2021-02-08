@@ -29,7 +29,8 @@ class Music {
       playing: true,
     };
 
-    Store.queue.set(message.guild?.id, queueContruct);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    Store.queue.set(message.guild!.id, queueContruct);
     return queueContruct;
   }
   async getSongInfo(url: string) {
@@ -41,7 +42,10 @@ class Music {
   }
   async play(message: Message, song: Record<string, string>): Promise<void> {
     if (!message.guild) return;
-    const serverQueue: queueContruct = Store.queue.get(message.guild.id);
+    const serverQueue = Store.queue.get(message.guild.id);
+    if (!serverQueue) {
+      return;
+    }
 
     if (!song || !serverQueue.connection) {
       serverQueue.voiceChannel.leave();
