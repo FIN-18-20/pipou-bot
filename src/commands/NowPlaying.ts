@@ -1,7 +1,6 @@
 import Store from '../services/Store';
 import { Command, secToTime } from '../framework';
 import { MessageEmbed } from 'discord.js';
-import { queueContruct } from '../services/Music';
 
 export default new Command({
   enabled: true,

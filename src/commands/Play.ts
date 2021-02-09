@@ -2,19 +2,26 @@ import { Command } from '../framework';
 import ytdl from 'ytdl-core';
 import Store from '../services/Store';
 import Music from '../services/Music';
+import Youtube from '../services/Youtube';
 
 export default new Command({
   enabled: true,
   name: 'play',
   description: 'Play youtube video',
   async handle({ message, logger }) {
-    const args = message.content.split(' ');
+    const args = message.content.split(/ +/);
     if (!message.member || !message.client.user || !message.guild) return;
 
     const validate = ytdl.validateURL(args[1]);
-    if (!validate) {
+    // Valid Video URL
+    if (args[1].startsWith('http') && !validate) {
       message.reply('Please input a **valid** URL.');
       return;
+    } else {
+      // Search video
+      const query = args.slice(1).join(' ');
+      const videos = await Youtube.search(query);
+      args[1] = `https://www.youtube.com/watch?v=${videos[0].id}`;
     }
 
     const serverQueue = Store.queue.get(message.guild.id);

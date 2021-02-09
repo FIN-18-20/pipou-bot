@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["ES2020"],
-    "strict": true,
+    "strict": false,
     "outDir": "build",
     "moduleResolution": "node",
     "module": "CommonJS",

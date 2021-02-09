@@ -80,7 +80,8 @@ export class Command extends Base {
     try {
       await this.handler({ message, logger });
     } catch (error) {
-      logger.fatal('error in command');
+      logger.fatal('Error in Command');
+      logger.fatal(error);
     }
   }
 

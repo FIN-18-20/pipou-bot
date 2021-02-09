@@ -29,6 +29,7 @@
     "make-promises-safe": "^5.1.0",
     "pino": "^6.7.0",
     "redis": "^3.0.2",
+    "simple-youtube-api": "^5.2.1",
     "ytdl-core": "^4.4.5"
   },
   "devDependencies": {
