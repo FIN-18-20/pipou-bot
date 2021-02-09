@@ -6,6 +6,7 @@ class Redis {
 
   public get: (key: string) => Promise<string | null>;
   public set: (key: string, value: string) => Promise<unknown>;
+  public setex: (key: string, seconds: number, value: string) => Promise<unknown>;
 
   constructor() {
     this._client = redis.createClient({
@@ -13,6 +14,7 @@ class Redis {
     });
     this.get = promisify(this._client.get).bind(this._client);
     this.set = promisify(this._client.set).bind(this._client);
+    this.setex = promisify(this._client.setex).bind(this._client);
   }
 
   /**
