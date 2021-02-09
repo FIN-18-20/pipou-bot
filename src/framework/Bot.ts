@@ -167,6 +167,8 @@ export class Bot {
         this.client.login(this.token),
         once(this.client, 'ready'),
       ]);
+      // To remove 'MaxListenersExceededWarning' warning in console
+      this._client.setMaxListeners(this._commands.length);
       this.startCommands();
       this.startCrons();
       this.startFormatCheckers();
