@@ -2,7 +2,7 @@ import { Command } from '../framework';
 import ytdl from 'ytdl-core';
 import Store from '../services/Store';
 import Music from '../services/Music';
-import Youtube from '../services/Youtube';
+import Youtube from '../services/YouTube';
 
 export default new Command({
   enabled: true,
