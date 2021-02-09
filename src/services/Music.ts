@@ -15,7 +15,7 @@ export interface Song {
   duration: number;
 }
 
-export interface queueContruct {
+export interface musicQueue {
   textChannel: TextChannel | DMChannel | NewsChannel;
   voiceChannel: VoiceChannel;
   connection: null | VoiceConnection;
@@ -26,7 +26,7 @@ export interface queueContruct {
 
 class Music {
   createQueue(message: Message, voiceChannel: VoiceChannel) {
-    const queueContruct: queueContruct = {
+    const musicQueue: musicQueue = {
       textChannel: message.channel,
       voiceChannel: voiceChannel,
       connection: null,
@@ -36,8 +36,8 @@ class Music {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    Store.queue.set(message.guild!.id, queueContruct);
-    return queueContruct;
+    Store.queue.set(message.guild!.id, musicQueue);
+    return musicQueue;
   }
   async getSongInfo(url: string): Promise<Song> {
     const songInfo = await ytdl.getInfo(url);
@@ -71,7 +71,7 @@ class Music {
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
   }
 
-  stop(serverQueue: queueContruct) {
+  stop(serverQueue: musicQueue) {
     serverQueue.songs = [];
     serverQueue.connection?.dispatcher.end();
   }

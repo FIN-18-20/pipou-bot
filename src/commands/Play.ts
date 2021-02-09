@@ -34,13 +34,13 @@ export default new Command({
     const song = await Music.getSongInfo(args[1]);
 
     if (!serverQueue) {
-      const queueContruct = Music.createQueue(message, voiceChannel);
-      queueContruct.songs.push(song);
+      const musicQueue = Music.createQueue(message, voiceChannel);
+      musicQueue.songs.push(song);
 
       try {
         const connection = await voiceChannel.join();
-        queueContruct.connection = connection;
-        Music.play(message, queueContruct.songs[0]);
+        musicQueue.connection = connection;
+        Music.play(message, musicQueue.songs[0]);
       } catch (err) {
         logger.error(err);
         Store.queue.delete(message.guild.id);
