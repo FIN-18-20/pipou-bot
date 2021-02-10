@@ -25,9 +25,6 @@ export interface musicQueue {
 }
 
 class Music {
-  clearQueues() {
-    Store.queue.clear();
-  }
   createQueue(message: Message, voiceChannel: VoiceChannel) {
     const musicQueue: musicQueue = {
       textChannel: message.channel,
@@ -69,10 +66,8 @@ class Music {
         serverQueue.songs.shift();
         this.play(message, serverQueue.songs[0]);
       })
-      .on('close', () => {
-        this.clearQueues();
-      })
       .on('error', (error: Error) => console.error(error));
+
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
   }

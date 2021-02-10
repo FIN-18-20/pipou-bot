@@ -38,8 +38,11 @@ export default new Command({
       musicQueue.songs.push(song);
 
       try {
-        const connection = await voiceChannel.join();
-        musicQueue.connection = connection;
+        musicQueue.connection = await voiceChannel.join();
+        musicQueue.connection.once('disconnect', () => {
+          Store.musicQueues.delete(message.guild.id);
+        });
+
         Music.play(message, musicQueue.songs[0]);
       } catch (err) {
         logger.error(err);
