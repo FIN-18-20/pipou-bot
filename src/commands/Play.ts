@@ -24,7 +24,7 @@ export default new Command({
       args[1] = `https://www.youtube.com/watch?v=${videos[0].id}`;
     }
 
-    const serverQueue = Store.queue.get(message.guild.id);
+    const serverQueue = Store.musicQueues.get(message.guild.id);
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
@@ -46,7 +46,7 @@ export default new Command({
         Music.play(message, musicQueue.songs[0]);
       } catch (err) {
         logger.error(err);
-        Store.queue.delete(message.guild.id);
+        Store.musicQueues.delete(message.guild.id);
         message.channel.send(err);
         return;
       }

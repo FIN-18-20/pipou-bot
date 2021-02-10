@@ -50,7 +50,7 @@ export default new Command({
           return;
         }
 
-        Store.inspiroBotQueue.set(queueId, true);
+        Store.inspiroBotQueues.set(queueId, true);
 
         const sessionID = (
           await got.get('https://inspirobot.me/api', {
@@ -105,12 +105,12 @@ export default new Command({
             }
             currentTime = response.data[i + 1].time;
 
-            if (!Store.inspiroBotQueue.get(queueId)) break;
+            if (!Store.inspiroBotQueues.get(queueId)) break;
           }
-        } while (Store.inspiroBotQueue.get(queueId));
+        } while (Store.inspiroBotQueues.get(queueId));
 
         voiceChannel.leave();
-        Store.inspiroBotQueue.delete(queueId);
+        Store.inspiroBotQueues.delete(queueId);
       } else if (args[0] === 'stop') {
         if (!message.member || !message.client.user || !message.guild) return;
 
@@ -122,7 +122,7 @@ export default new Command({
           return;
         }
 
-        Store.inspiroBotQueue.set(queueId, false);
+        Store.inspiroBotQueues.set(queueId, false);
       }
     } else {
       const url: string = (

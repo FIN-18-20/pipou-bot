@@ -36,7 +36,7 @@ class Music {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    Store.queue.set(message.guild!.id, musicQueue);
+    Store.musicQueues.set(message.guild!.id, musicQueue);
     return musicQueue;
   }
   async getSongInfo(url: string): Promise<Song> {
@@ -49,14 +49,14 @@ class Music {
   }
   async play(message: Message, song: Song): Promise<void> {
     if (!message.guild) return;
-    const serverQueue = Store.queue.get(message.guild.id);
+    const serverQueue = Store.musicQueues.get(message.guild.id);
     if (!serverQueue) {
       return;
     }
 
     if (!song || !serverQueue.connection) {
       serverQueue.voiceChannel.leave();
-      Store.queue.delete(message.guild.id);
+      Store.musicQueues.delete(message.guild.id);
       return;
     }
 

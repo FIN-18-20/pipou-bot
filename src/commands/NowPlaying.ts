@@ -10,7 +10,7 @@ export default new Command({
   async handle({ message }) {
     if (!message.guild) return;
 
-    const serverQueue = Store.queue.get(message.guild.id);
+    const serverQueue = Store.musicQueues.get(message.guild.id);
     if (!serverQueue) {
       message.channel.send('There is nothing playing.');
       return;

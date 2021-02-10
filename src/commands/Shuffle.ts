@@ -8,7 +8,7 @@ export default new Command({
   async handle({ message }) {
     if (!message.guild) return;
 
-    const serverQueue = Store.queue.get(message.guild.id);
+    const serverQueue = Store.musicQueues.get(message.guild.id);
     if (!message.member?.voice.channel) {
       message.channel.send(
         'You have to be in a voice channel to skip the music!',
