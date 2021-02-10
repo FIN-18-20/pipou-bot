@@ -39,3 +39,7 @@ export function shuffle<T>(array: Array<T>): Array<T> {
   }
   return array;
 }
+
+export function sleep(ms: number): Promise<unknown> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

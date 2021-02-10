@@ -1,7 +1,7 @@
-import { Command } from '../framework';
-import Store from '../services/Store';
 import got from 'got';
-import { MessageEmbed, TextChannel, Webhook } from 'discord.js';
+import { Command, sleep } from '../framework';
+import Store from '../services/Store';
+import { MessageEmbed, TextChannel } from 'discord.js';
 
 interface QuoteData {
   type: string;
@@ -27,16 +27,13 @@ export default new Command({
 
     const mindfulnessModeArgs = ['mm', 'mindfulnessmode', 'mindfulness-mode'];
 
-    let inspirobotHook: Webhook;
     const hooks = await (message.channel as TextChannel).fetchWebhooks();
-    if (hooks.get('Inspirobot') !== undefined) {
-      inspirobotHook = hooks.get('Inspirobot')!;
-    } else {
-      inspirobotHook = await (message.channel as TextChannel).createWebhook(
-        'Inspirobot',
-        { avatar: 'https://inspirobot.me/website/images/favicon.png' },
-      );
-    }
+    const inspirobotHook =
+      hooks.get('Inspirobot') ??
+      (await (message.channel as TextChannel).createWebhook('Inspirobot', {
+        avatar: 'https://inspirobot.me/website/images/favicon.png',
+      }));
+
     if (args.length === 1) {
       if (!message.member || !message.client.user || !message.guild) return;
       const queueId = message.guild.id + message.channel.id;
@@ -52,12 +49,9 @@ export default new Command({
 
         Store.inspiroBotQueues.set(queueId, true);
 
-        const sessionID = (
-          await got.get('https://inspirobot.me/api', {
-            searchParams: { getSessionID: 1 },
-          })
-        ).body;
-
+        const { body: sessionID } = await got.get('https://inspirobot.me/api', {
+          searchParams: { getSessionID: 1 },
+        });
         const connection = await voiceChannel.join();
 
         do {
@@ -82,26 +76,19 @@ export default new Command({
           let currentTime = 0;
           for (let i = 0; i < response.data.length - 1; i++) {
             if (response.data[i].type === 'quote') {
-              response.data[i].text = response.data[i].text!.replace(
+              response.data[i].text = response.data[i].text.replace(
                 pauseRegex,
                 '',
               );
               try {
                 const msg = await inspirobotHook.send(response.data[i].text);
-                await new Promise((c) =>
-                  setTimeout(
-                    c,
-                    (response.data[i + 1].time - currentTime) * 1000,
-                  ),
-                );
+                await sleep((response.data[i + 1].time - currentTime) * 1000);
                 msg.delete({ timeout: 2000 });
               } catch (e) {
                 console.error(e);
               }
             } else if (response.data[i].type === 'transition') {
-              await new Promise((c) =>
-                setTimeout(c, (response.data[i + 1].time - currentTime) * 1000),
-              );
+              await sleep((response.data[i + 1].time - currentTime) * 1000);
             }
             currentTime = response.data[i + 1].time;
 
@@ -125,17 +112,16 @@ export default new Command({
         Store.inspiroBotQueues.set(queueId, false);
       }
     } else {
-      const url: string = (
-        await got.get('https://inspirobot.me/api?generate=true')
-      ).body;
-
+      const { body: url } = await got.get(
+        'https://inspirobot.me/api?generate=true',
+      );
       const embed = new MessageEmbed()
         .setURL(url)
         .setTitle('InspiroBot says :')
         .setImage(url);
 
       try {
-        inspirobotHook!.send(embed).catch(console.error);
+        inspirobotHook.send(embed).catch(console.error);
       } catch (e) {
         console.error(e);
       }
