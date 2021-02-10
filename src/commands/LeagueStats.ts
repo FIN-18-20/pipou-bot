@@ -29,7 +29,7 @@ interface SummonerBasic {
 export default new Command({
   enabled: true,
   name: 'ls',
-  description: 'Leaguestats.gg',
+  description: 'Leaguestats.gg statistics.',
   alias: ['leaguestats', 'league', 'riot', 'rito'],
   async handle({ message }) {
     const args = message.content.split(' ').slice(1);

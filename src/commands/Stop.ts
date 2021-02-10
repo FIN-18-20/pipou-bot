@@ -5,7 +5,7 @@ import Music from '../services/Music';
 export default new Command({
   enabled: true,
   name: 'stop',
-  description: 'Stop all songs in the queue',
+  description: 'Stop all songs in the queue.',
   async handle({ message }) {
     if (!message.guild) return;
 

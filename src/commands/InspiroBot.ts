@@ -19,7 +19,7 @@ interface MindfulnessMode {
 export default new Command({
   enabled: true,
   name: 'inspirobot',
-  alias: ['inspire', 'ib'],
+  alias: ['inspire', 'ib', 'inspiro'],
   description:
     'Get an unique inspirational quote for endless enrichment of pointless human existence.',
   async handle({ message }) {

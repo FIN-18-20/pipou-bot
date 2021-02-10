@@ -7,7 +7,7 @@ import Youtube from '../services/YouTube';
 export default new Command({
   enabled: true,
   name: 'play',
-  description: 'Play youtube video',
+  description: 'Play a youtube music.',
   async handle({ message, logger }) {
     const args = message.content.split(/ +/);
     if (!message.member || !message.client.user || !message.guild) return;
