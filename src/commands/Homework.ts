@@ -9,6 +9,19 @@ interface Homework {
   date: Date;
 }
 
+// TODO Put this function in Redis service ?
+async function scanKeys(cursor: string, pattern: string): Promise<string[]> {
+  const keys: string[] = []
+
+  do {
+    const scan = await Redis.scan(cursor, ['MATCH', pattern]);
+    cursor = (scan[0] as string);
+    keys.push(...(scan[1] as string[]));
+  } while (cursor !== '0')
+
+  return keys;
+}
+
 export default new Command({
   enabled: true,
   name: 'homework',
@@ -18,6 +31,11 @@ export default new Command({
 
     const args = message.content.match(/"[^"]*"|\S+/g)?.map(m => m.slice(0, 1) === '"' ? m.slice(1, -1) : m);
     const channelName = (message.channel as TextChannel).name
+
+    if (!message.member?.roles.cache.find(r => r.name === 'HEIG') && message.guild?.name === 'Kaelin') {
+      message.reply("You need to be a HEIG-VD student to use this command.");
+      return;
+    }
 
     if (args == undefined || args.length === 1) {
       message.channel.send("Invalid arguments. !hw help to see command synthax.");
@@ -37,25 +55,27 @@ export default new Command({
         date: new Date(Number(date[2]), Number(date[1]) - 1, Number(date[0])) // Fuck this shit
       }
 
-      const key = 'hw-'+ channelName + '-' + homework.id;
+      const key = 'hw-' + channelName + '-' + homework.id;
       const ttl = Math.floor(Math.abs((homework.date.getTime() - Date.now()) / 1000)) + 86400; // + one day
 
       await Redis.setex(key, ttl, JSON.stringify(homework));
 
       const embed = new MessageEmbed()
-        .setColor('#2DD4BF')
+        .setColor('#fad541')
         .setTitle('Homework added for ' + channelName)
         .setDescription('ID: ' + homework.id)
         .addFields(
           { name: 'Due for ' + homework.date.toLocaleDateString('fr-FR'), value: description }
         )
       message.channel.send(embed);
+      return;
     }
 
     // SHOW command
     // TODO refactor repeating code with show-all
     if (args[1] === "show" && args.length === 2) {
-      const keys = await Redis.keys('hw-' + channelName + '-*');
+
+      const keys = await scanKeys('0', 'hw-' + channelName + '-*');
 
       if (keys.length) {
         const embedFields: EmbedFieldData[] = [];
@@ -66,7 +86,7 @@ export default new Command({
           if (data != null) {
             const homework: Homework = JSON.parse(data);
             const date = new Date(homework.date);
-            
+
             const name = (index + 1) + '. ' + homework.description;
             const value: string = 'Due for ' + date.toLocaleDateString('fr-FR') + '\n ID: ' + homework.id;
 
@@ -75,22 +95,25 @@ export default new Command({
         }
 
         const embed = new MessageEmbed()
-          .setColor('#2DD4BF')
+          .setColor('#fad541')
           .setTitle('Homeworks for ' + channelName)
           .addFields(...embedFields)
         message.channel.send(embed);
+        return;
 
       } else {
         const embed = new MessageEmbed()
-          .setColor('#2DD4BF')
+          .setColor('#fad541')
           .setTitle('No homework for ' + channelName)
         message.channel.send(embed);
+        return;
       }
     }
 
     // SHOW-ALL command
     if (args[1] === "show-all" && args.length === 2) {
-      const keys = await Redis.keys('hw-*');
+
+      const keys = await scanKeys('0', 'hw-*');
 
       if (keys.length) {
         const embedFields: EmbedFieldData[] = [];
@@ -110,23 +133,43 @@ export default new Command({
         }
 
         const embed = new MessageEmbed()
-          .setColor('#2DD4BF')
+          .setColor('#fad541')
           .setTitle('Homeworks for all courses')
           .addFields(...embedFields)
         message.channel.send(embed);
+        return;
 
       } else {
         const embed = new MessageEmbed()
-          .setColor('#2DD4BF')
+          .setColor('#fad541')
           .setTitle('No homework Pog!')
         message.channel.send(embed);
+        return;
       }
+    }
+
+    // DELETE command
+    if (args[1] == "delete" && args.length === 3) {
+      const keys = await scanKeys('0', 'hw-*-' + args[2])
+      if (keys.length) {
+        await Redis.del(keys[0]);
+        const embed = new MessageEmbed()
+          .setColor('#fad541')
+          .setTitle('Homework with ID ' + args[2] + ' has been deleted.')
+        message.channel.send(embed);
+      } else {
+        const embed = new MessageEmbed()
+          .setColor('#fad541')
+          .setTitle('No homework found with ID ' + args[2])
+        message.channel.send(embed);
+      }
+      return;
     }
 
     // HELP command
     if (args[1] === "help") {
       const embed = new MessageEmbed()
-        .setColor('#2DD4BF')
+        .setColor('#fad541')
         .setTitle('Homework commands')
         .setDescription('Manage homeworks for a specific HEIG-VD module. \n Alias: [hw, homework]')
         .addFields(
@@ -137,6 +180,8 @@ export default new Command({
           { name: 'Modify homework (not working yet)', value: '!hw modify homework-id [optional] "New description" [optional] jj.mm.yyyy' },
         )
       message.channel.send(embed);
+      return;
     }
+    message.channel.send("Invalid arguments. !hw help to see command synthax.");
   },
 });
