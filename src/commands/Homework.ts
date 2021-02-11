@@ -42,7 +42,7 @@ export default new Command({
       return;
     }
 
-    // ADD command
+    // ANCHOR ADD command
     // TODO Pre-condition : validate args || Use Luxon for date manipulation
     if (args[1] === "add" && args.length === 4) {
       const description = args[2];
@@ -65,13 +65,13 @@ export default new Command({
         .setTitle('Homework added for ' + channelName)
         .setDescription('ID: ' + homework.id)
         .addFields(
-          { name: 'Due for ' + homework.date.toLocaleDateString('fr-FR'), value: description }
+          { name: 'Due for ' + homework.date.toLocaleDateString('fr-FR'), value: homework.description }
         )
       message.channel.send(embed);
       return;
     }
 
-    // SHOW command
+    // ANCHOR SHOW command
     // TODO refactor repeating code with show-all
     if (args[1] === "show" && args.length === 2) {
 
@@ -110,7 +110,7 @@ export default new Command({
       }
     }
 
-    // SHOW-ALL command
+    // ANCHOR SHOW-ALL command
     if (args[1] === "show-all" && args.length === 2) {
 
       const keys = await scanKeys('0', 'hw-*');
@@ -148,25 +148,66 @@ export default new Command({
       }
     }
 
-    // DELETE command
+    // ANCHOR DELETE command
     if (args[1] == "delete" && args.length === 3) {
-      const keys = await scanKeys('0', 'hw-*-' + args[2])
+      const id = args[2];
+      const keys = await scanKeys('0', 'hw-*-' + id)
       if (keys.length) {
         await Redis.del(keys[0]);
         const embed = new MessageEmbed()
           .setColor('#fad541')
-          .setTitle('Homework with ID ' + args[2] + ' has been deleted.')
+          .setTitle('Homework with ID ' + id + ' has been deleted.')
         message.channel.send(embed);
       } else {
         const embed = new MessageEmbed()
           .setColor('#fad541')
-          .setTitle('No homework found with ID ' + args[2])
+          .setTitle('No homework found with ID ' + id)
         message.channel.send(embed);
       }
       return;
     }
 
-    // HELP command
+    // ANCHOR MODIFY command
+    if (args[1] === "modify" && args.length >= 4 && args.length <= 5) {
+      const id = args[2];
+      const keys = await scanKeys('0', 'hw-*-' + id)
+      if (keys.length) {
+        const homework: Homework = JSON.parse(await Redis.get(keys[0]));
+
+        if (args.length === 5) {
+          const description = args[3];
+          const date = args[4].split('.')
+          homework.description = description;
+          homework.date = new Date(Number(date[2]), Number(date[1]) - 1, Number(date[0]));
+        }
+
+        // NOTE Meaning one option was skipped
+        if (args.length === 4) {
+          // TODO Need to add Luxon to make it easy to identify/validate dates.
+        }
+
+        const ttl = Math.floor(Math.abs((homework.date.getTime() - Date.now()) / 1000)) + 86400;
+        await Redis.setex(keys[0], ttl, JSON.stringify(homework));
+
+        const embed = new MessageEmbed()
+          .setColor('#fad541')
+          .setTitle('Homework modified for ' + channelName)
+          .setDescription('ID: ' + homework.id)
+          .addFields(
+            { name: 'Due for ' + homework.date.toLocaleDateString('fr-FR'), value: homework.description }
+          )
+        message.channel.send(embed);
+        return;
+      } else {
+        const embed = new MessageEmbed()
+          .setColor('#fad541')
+          .setTitle('No homework found with ID ' + id)
+        message.channel.send(embed);
+      }
+      return;
+    }
+
+    // ANCHOR HELP command
     if (args[1] === "help") {
       const embed = new MessageEmbed()
         .setColor('#fad541')
@@ -176,7 +217,7 @@ export default new Command({
           { name: 'Add homework', value: '!hw add "Homework description" jj.mm.yyyy' },
           { name: 'Show homeworks (channel bound)', value: '!hw show' },
           { name: 'Show all homeworks', value: '!hw show-all' },
-          { name: 'Delete homework (not working yet)', value: '!hw delete homework-id' },
+          { name: 'Delete homework', value: '!hw delete homework-id' },
           { name: 'Modify homework (not working yet)', value: '!hw modify homework-id [optional] "New description" [optional] jj.mm.yyyy' },
         )
       message.channel.send(embed);

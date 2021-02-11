@@ -6,7 +6,7 @@ class Redis {
 
   public get: (key: string) => Promise<string | null>;
   public set: (key: string, value: string) => Promise<unknown>;
-  public setex: (key: string, seconds: number, value: string) => Promise<unknown>;
+  public setex: (key: string, seconds: number, value: string) => Promise<string>;
   public keys: (pattern: string) => Promise<string[]>;
   public scan: (cursor: string, options: string[]) => Promise<Array<string | string[]>>;
   public del: (key: string) => Promise<number>;
