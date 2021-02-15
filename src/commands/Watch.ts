@@ -61,35 +61,27 @@ function addFields(countryProvider: ProvidersByCountry, emoji: string): EmbedFie
   let rent = ''
   let buy = ''
 
-  if (countryProvider.flatrate === undefined) {
-    streaming = 'No provider'
-  } else {
+  if (countryProvider.flatrate !== undefined) {
     for (const provider of countryProvider.flatrate) {
       streaming += provider.provider_name + '\n';
     }
+    embedFields.push({ name: 'Streaming', value: streaming, inline: true, })
   }
 
-  if (countryProvider.rent === undefined) {
-    rent = 'No provider'
-  } else {
+  if (countryProvider.rent !== undefined) {
     for (const provider of countryProvider.rent) {
       rent += provider.provider_name + '\n';
     }
+    embedFields.push({ name: 'Rent', value: rent, inline: true, })
   }
 
-  if (countryProvider.buy === undefined) {
-    buy = 'No provider'
-  } else {
+  if (countryProvider.buy !== undefined) {
     for (const provider of countryProvider.buy) {
       buy += provider.provider_name + '\n';
     }
+    embedFields.push({ name: 'Buy', value: buy, inline: true, })
   }
 
-  embedFields.push(
-    { name: 'Streaming', value: streaming, inline: true, },
-    { name: 'Rent', value: rent, inline: true, },
-    { name: 'Buy', value: buy, inline: true, },
-  )
   return embedFields;
 }
 
