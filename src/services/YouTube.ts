@@ -2,7 +2,7 @@ import YouTube from 'simple-youtube-api';
 
 class YouTubeService {
   private readonly _apiKey?: string;
-  private readonly _youtube;
+  private readonly _youtube: YouTube;
 
   constructor() {
     this._apiKey = process.env.YOUTUBE_API_KEY;
