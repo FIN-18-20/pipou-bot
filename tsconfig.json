@@ -7,6 +7,7 @@
     "outDir": "build",
     "moduleResolution": "node",
     "module": "CommonJS",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "rootDir": "./",
     "baseUrl": "./",
