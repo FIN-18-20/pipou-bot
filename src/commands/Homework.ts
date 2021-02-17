@@ -168,7 +168,8 @@ export default new Command({
       const id = args[2];
       const keys = await scanKeys('0', 'hw-*-' + id);
       if (keys.length) {
-        const homework: Homework = JSON.parse(await Redis.get(keys[0]));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const homework: Homework = JSON.parse((await Redis.get(keys[0]))!);
         
         if (args.length === 5) {
           homework.description = args[3];

@@ -76,7 +76,8 @@ export default new Command({
           let currentTime = 0;
           for (let i = 0; i < response.data.length - 1; i++) {
             if (response.data[i].type === 'quote') {
-              response.data[i].text = response.data[i].text.replace(
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              response.data[i].text = response.data[i].text!.replace(
                 pauseRegex,
                 '',
               );

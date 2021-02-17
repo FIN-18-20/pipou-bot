@@ -36,15 +36,15 @@ interface ProviderSearchResult {
 
 interface ProviderSearch {
   id: number,
-  results: Array<ProviderSearchResult>
+  results: ProviderSearchResult
 }
 
-async function getProviders(media: string, id: number): Promise<ProviderSearchResult[]> {
+async function getProviders(media: string, id: number): Promise<ProviderSearchResult> {
   const providersData: ProviderSearch = await got
     .get(`https://api.movie-park.ch/api/${media}/${id}/watch/providers?api_key=APIKEY`)
     .json();
 
-  const providersResults: ProviderSearchResult[] = [];
+  const providersResults: ProviderSearchResult = {};
   for (const key in providersData.results) {
     if (key === 'CH' || key === 'US') {
       providersResults[key] = providersData.results[key]
@@ -123,8 +123,8 @@ export default new Command({
       return;
     }
 
-    const chProvider: ProvidersByCountry | null = Object.keys(providersResults).includes('CH') ? providersResults['CH'] : null;
-    const usProvider: ProvidersByCountry | null = Object.keys(providersResults).includes('US') ? providersResults['US'] : null;
+    const chProvider: ProvidersByCountry | null = providersResults['CH'] ?? null;
+    const usProvider: ProvidersByCountry | null = providersResults['US'] ?? null;
 
     const embedFields: EmbedFieldData[] = [];
 

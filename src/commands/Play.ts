@@ -40,7 +40,8 @@ export default new Command({
       try {
         musicQueue.connection = await voiceChannel.join();
         musicQueue.connection.once('disconnect', () => {
-          Store.musicQueues.delete(message.guild.id);
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          Store.musicQueues.delete(message.guild!.id);
         });
 
         Music.play(message, musicQueue.songs[0]);
