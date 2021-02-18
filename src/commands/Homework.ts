@@ -12,19 +12,6 @@ interface Homework {
   date: string;
 }
 
-// TODO Put this function in Redis service ?
-async function scanKeys(cursor: string, pattern: string): Promise<string[]> {
-  const keys: string[] = []
-
-  do {
-    const scan = await Redis.scan(cursor, ['MATCH', pattern]);
-    cursor = (scan[0] as string);
-    keys.push(...(scan[1] as string[]));
-  } while (cursor !== '0')
-
-  return keys;
-}
-
 export default new Command({
   enabled: true,
   name: 'homework',
@@ -56,7 +43,7 @@ export default new Command({
         date: date.toISO()
       }
 
-      if(!date.isValid || date < DateTime.local()) {
+      if (!date.isValid || date < DateTime.local()) {
         message.channel.send("Invalid date argument. Correct date synthax is dd.mm.yyyy.");
         return;
       }
@@ -80,7 +67,7 @@ export default new Command({
 
     // ANCHOR SHOW command
     if (args[1] === "show" && args.length === 2) {
-      const keys = await scanKeys('0', 'hw-' + channelName + '-*');
+      const keys = await Redis.scanMatchingKeys('0', 'hw-' + channelName + '-*');
 
       if (keys.length) {
         const embedFields: EmbedFieldData[] = [];
@@ -113,7 +100,7 @@ export default new Command({
 
     // ANCHOR SHOW-ALL command
     if (args[1] === "show-all" && args.length === 2) {
-      const keys = await scanKeys('0', 'hw-*');
+      const keys = await Redis.scanMatchingKeys('0', 'hw-*');
 
       if (keys.length) {
         const embedFields: EmbedFieldData[] = [];
@@ -147,7 +134,7 @@ export default new Command({
     // ANCHOR DELETE command
     if (args[1] == "delete" && args.length === 3) {
       const id = args[2];
-      const keys = await scanKeys('0', 'hw-*-' + id);
+      const keys = await Redis.scanMatchingKeys('0', 'hw-*-' + id);
       if (keys.length) {
         await Redis.del(keys[0]);
         const embed = new MessageEmbed()
@@ -166,11 +153,11 @@ export default new Command({
     // ANCHOR MODIFY command
     if (args[1] === "modify" && args.length >= 4 && args.length <= 5) {
       const id = args[2];
-      const keys = await scanKeys('0', 'hw-*-' + id);
+      const keys = await Redis.scanMatchingKeys('0', 'hw-*-' + id);
       if (keys.length) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const homework: Homework = JSON.parse((await Redis.get(keys[0]))!);
-        
+
         if (args.length === 5) {
           homework.description = args[3];
           homework.date = DateTime.fromFormat(args[4], "dd.MM.yyyy", { locale: "fr" }).toISO();
@@ -178,7 +165,7 @@ export default new Command({
 
         if (args.length === 4) {
           const date = DateTime.fromFormat(args[3], "dd.MM.yyyy", { locale: "fr" });
-          if (!date.isValid || date < DateTime.local()){
+          if (!date.isValid || date < DateTime.local()) {
             // Check if the argument was meant to be the description by checking if it has at least one letter.
             if (/^.*[a-zA-Z]+.*$/.test(args[3])) {
               homework.description = args[3];
@@ -191,7 +178,7 @@ export default new Command({
           }
         }
 
-        const ttl = Math.floor(Math.abs(Interval.fromDateTimes(DateTime.local(),  DateTime.fromISO(homework.date)).length('seconds'))) + 86400;
+        const ttl = Math.floor(Math.abs(Interval.fromDateTimes(DateTime.local(), DateTime.fromISO(homework.date)).length('seconds'))) + 86400;
         await Redis.setex(keys[0], ttl, JSON.stringify(homework));
 
         const embed = new MessageEmbed()

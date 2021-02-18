@@ -34,6 +34,22 @@ class Redis {
 
     return this._client;
   }
+
+  /**
+   * Returns a promise that resolve in an array of keys matching a certain pattern.
+   * @param cursor current position
+   * @param pattern matching pattern
+   */
+  public async scanMatchingKeys(cursor: string, pattern: string): Promise<string[]> {
+    const keys: string[] = []
+    do {
+      const scan = await this.scan(cursor, ['MATCH', pattern]);
+      cursor = (scan[0] as string);
+      keys.push(...(scan[1] as string[]));
+    } while (cursor !== '0')
+  
+    return keys;
+  }
 }
 
 export default new Redis();
