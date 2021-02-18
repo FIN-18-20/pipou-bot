@@ -3,13 +3,28 @@ import { EmbedFieldData, MessageEmbed, TextChannel } from 'discord.js';
 import { Command } from '../framework'
 import { DateTime, Interval } from 'luxon'
 
-// TODO Lazar: Refactor repeating code
-
 interface Homework {
   id: number;
   module: string;
   description: string;
   date: string;
+}
+
+async function addEmbedFields(keys: string[], showModule: boolean): Promise<EmbedFieldData[]> {
+  const embedFields: EmbedFieldData[] = [];
+  for (const [index, key] of keys.entries()) {
+    const data = await Redis.get(key);
+
+    if (data != null) {
+      const homework: Homework = JSON.parse(data)
+      const moduleName = showModule ? '. [' + homework.module + '] ' : '. ';
+      const name = (index + 1) + moduleName + homework.description
+      const value: string = 'Due for ' + DateTime.fromISO(homework.date).toLocaleString({ locale: "fr" }) + '\n ID: ' + homework.id;
+
+      embedFields.push({ name: name, value: value, inline: false });
+    }
+  }
+  return embedFields;
 }
 
 export default new Command({
@@ -52,15 +67,11 @@ export default new Command({
       const ttl = Math.floor(Math.abs(Interval.fromDateTimes(DateTime.local(), date).length('seconds'))) + 86400; // + one day
       await Redis.setex(key, ttl, JSON.stringify(homework));
 
-      console.log("FIRST: " + homework.date);
       const embed = new MessageEmbed()
         .setColor('#fad541')
         .setTitle('Homework added for ' + channelName)
         .setDescription('ID: ' + homework.id)
-        .addFields(
-          { name: 'Due for ' + date.toLocaleString(), value: homework.description }
-        )
-
+        .addFields({ name: 'Due for ' + date.toLocaleString(), value: homework.description })
       message.channel.send(embed);
       return;
     }
@@ -68,21 +79,8 @@ export default new Command({
     // ANCHOR SHOW command
     if (args[1] === "show" && args.length === 2) {
       const keys = await Redis.scanMatchingKeys('0', 'hw-' + channelName + '-*');
-
       if (keys.length) {
-        const embedFields: EmbedFieldData[] = [];
-
-        for (const [index, key] of keys.entries()) {
-          const data = await Redis.get(key);
-
-          if (data != null) {
-            const homework: Homework = JSON.parse(data);
-            const name = (index + 1) + '. ' + homework.description
-            const value: string = 'Due for ' + DateTime.fromISO(homework.date).toLocaleString({ locale: "fr" }) + '\n ID: ' + homework.id;
-
-            embedFields.push({ name: name, value: value, inline: false });
-          }
-        }
+        const embedFields = await addEmbedFields(keys, false)
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for ' + channelName)
@@ -101,21 +99,8 @@ export default new Command({
     // ANCHOR SHOW-ALL command
     if (args[1] === "show-all" && args.length === 2) {
       const keys = await Redis.scanMatchingKeys('0', 'hw-*');
-
       if (keys.length) {
-        const embedFields: EmbedFieldData[] = [];
-
-        for (const [index, key] of keys.entries()) {
-          const data = await Redis.get(key);
-
-          if (data != null) {
-            const homework: Homework = JSON.parse(data);
-            const name = (index + 1) + '. [' + homework.module + '] ' + homework.description;
-            const value: string = 'Due for ' + DateTime.fromISO(homework.date).toLocaleString({ locale: "fr" }) + '\n ID: ' + homework.id;
-
-            embedFields.push({ name: name, value: value, inline: false });
-          }
-        }
+        const embedFields = await addEmbedFields(keys, true)
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for all courses')
