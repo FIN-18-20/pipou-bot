@@ -13,6 +13,7 @@ interface Homework {
 async function addEmbedFields(
   keys: string[],
   showModule: boolean,
+  lightMode = false,
 ): Promise<EmbedFieldData[]> {
   const embedFields: EmbedFieldData[] = [];
   const homeworks: Homework[] = await Promise.all(
@@ -28,11 +29,13 @@ async function addEmbedFields(
     .map((homework, index) => {
       const moduleName = showModule ? '. [' + homework.module + '] ' : '. ';
       const name = index + 1 + moduleName + homework.description;
-      const value: string =
+      let value =
         'Due for ' +
-        DateTime.fromISO(homework.date).toLocaleString({ locale: 'fr' }) +
-        '\n ID: ' +
-        homework.id;
+        DateTime.fromISO(homework.date).toLocaleString({ locale: 'fr' });
+
+      if (!lightMode) {
+        value += '\n ID: ' + homework.id;
+      }
 
       embedFields.push({ name: name, value: value, inline: false });
     });
@@ -105,13 +108,17 @@ export default new Command({
     }
 
     // ANCHOR SHOW command
-    if (args[1] === 'show' && args.length === 2) {
+    if (args[1] === 'show' && [2, 3].includes(args.length)) {
       const keys = await Redis.scanMatchingKeys(
         '0',
         'hw-' + channelName + '-*',
       );
       if (keys.length) {
-        const embedFields = await addEmbedFields(keys, false);
+        const embedFields = await addEmbedFields(
+          keys,
+          false,
+          args[2] === '-light',
+        );
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for ' + channelName)
@@ -128,10 +135,14 @@ export default new Command({
     }
 
     // ANCHOR SHOW-ALL command
-    if (args[1] === 'show-all' && args.length === 2) {
+    if (args[1] === 'show-all' && [2, 3].includes(args.length)) {
       const keys = await Redis.scanMatchingKeys('0', 'hw-*');
       if (keys.length) {
-        const embedFields = await addEmbedFields(keys, true);
+        const embedFields = await addEmbedFields(
+          keys,
+          true,
+          args[2] === '-light',
+        );
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for all courses')
@@ -245,8 +256,14 @@ export default new Command({
             name: 'Add homework',
             value: '!hw add "Homework description" dd.mm.yyyy',
           },
-          { name: 'Show homeworks (channel bound)', value: '!hw show' },
-          { name: 'Show all homeworks', value: '!hw show-all' },
+          {
+            name: 'Show homeworks (channel bound)',
+            value: '!hw show [optional] -light',
+          },
+          {
+            name: 'Show all homeworks',
+            value: '!hw show-all [optional] -light',
+          },
           { name: 'Delete homework', value: '!hw delete homework-id' },
           {
             name: 'Modify homework',
