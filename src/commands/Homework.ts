@@ -13,7 +13,7 @@ interface Homework {
 async function addEmbedFields(
   keys: string[],
   showModule: boolean,
-  lightMode = false,
+  verboseMode = false,
 ): Promise<EmbedFieldData[]> {
   const embedFields: EmbedFieldData[] = [];
   const homeworks: Homework[] = await Promise.all(
@@ -33,7 +33,7 @@ async function addEmbedFields(
         'Due for ' +
         DateTime.fromISO(homework.date).toLocaleString({ locale: 'fr' });
 
-      if (!lightMode) {
+      if (verboseMode) {
         value += '\n ID: ' + homework.id;
       }
 
@@ -117,7 +117,7 @@ export default new Command({
         const embedFields = await addEmbedFields(
           keys,
           false,
-          args[2] === '-light',
+          args[2] === '-v',
         );
         const embed = new MessageEmbed()
           .setColor('#fad541')
@@ -141,7 +141,7 @@ export default new Command({
         const embedFields = await addEmbedFields(
           keys,
           true,
-          args[2] === '-light',
+          args[2] === '-v',
         );
         const embed = new MessageEmbed()
           .setColor('#fad541')
@@ -258,17 +258,17 @@ export default new Command({
           },
           {
             name: 'Show homeworks (channel bound)',
-            value: '!hw show [optional] -light',
+            value: '!hw show [-v]',
           },
           {
             name: 'Show all homeworks',
-            value: '!hw show-all [optional] -light',
+            value: '!hw show-all [-v]',
           },
           { name: 'Delete homework', value: '!hw delete homework-id' },
           {
             name: 'Modify homework',
             value:
-              '!hw modify homework-id [optional] "New description" [optional] dd.mm.yyyy',
+              '!hw modify homework-id ["New description"] [dd.mm.yyyy]',
           },
         );
       message.channel.send(embed);
