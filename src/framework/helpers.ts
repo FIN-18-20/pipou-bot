@@ -1,4 +1,4 @@
-import { Client, TextChannel } from 'discord.js';
+import { Client, MessageEmbed, TextChannel } from 'discord.js';
 
 export function findTextChannelByName(
   client: Client,
@@ -42,4 +42,11 @@ export function shuffle<T>(array: Array<T>): Array<T> {
 
 export function sleep(ms: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function ErrorEmbed(message: string): MessageEmbed {
+  return new MessageEmbed().setColor('#DC2626').addFields({
+    name: '❌  Error',
+    value: message,
+  });
 }
