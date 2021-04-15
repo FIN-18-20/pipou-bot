@@ -82,7 +82,8 @@ export default new Command({
                 '',
               );
               try {
-                const msg = await inspirobotHook.send(response.data[i].text);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const msg = await inspirobotHook.send(response.data[i].text!);
                 await sleep((response.data[i + 1].time - currentTime) * 1000);
                 msg.delete({ timeout: 2000 });
               } catch (e) {
