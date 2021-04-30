@@ -58,6 +58,10 @@ export default new Command({
       }
     } else {
       serverQueue.songs.push(song);
+      // If a sound is currently playing and no music before
+      if (!serverQueue.currentSong) {
+        serverQueue.currentSong = song;
+      }
       if (!serverQueue.playing) {
         Music.play(guildId, serverQueue.songs[0]);
       } else {

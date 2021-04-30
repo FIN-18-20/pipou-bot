@@ -88,7 +88,7 @@ class Music {
     serverQueue.dispatcher?.pause();
   }
 
-  resume(serverQueue: musicQueue, timer: number) {
+  resume(serverQueue: musicQueue, timer = 0) {
     if (!serverQueue.connection || !serverQueue.currentSong) {
       return;
     }

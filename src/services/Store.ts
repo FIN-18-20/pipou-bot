@@ -8,7 +8,7 @@ const sounds = new Map<string, string>();
 fs.readdirSync(directory).forEach((name) => {
   sounds.set(
     name.substring(0, name.lastIndexOf('.')),
-    path.join(__dirname, '../../data/sounds', name),
+    path.resolve(process.cwd(), 'data/sounds', name),
   );
 });
 
