@@ -9,18 +9,24 @@ export default new Command({
   description: 'List soundboards sounds, for now.',
   alias: ['soundboard', 's'],
   async handle({ message }) {
-    if (!message.guild || !message.member || !message.member.voice.channel)
-      return;
+    if (!message.guild || !message.member) return;
     const args = message.content.split(/ +/).slice(1);
 
     if (!args.length) {
       const embed = new MessageEmbed()
         .setColor('#FBBF24')
-        .setTitle('Available sounds');
+        .setTitle(`${Store.sounds.size} Available sounds`);
 
       embed.setDescription(Array.from(Store.sounds.keys()).join('\n'));
 
       message.channel.send(embed);
+      return;
+    }
+
+    if (!message.member.voice.channel) {
+      message.channel.send(
+        'You need to be in a voice channel to play a sound!',
+      );
       return;
     }
 
