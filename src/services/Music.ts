@@ -3,6 +3,7 @@ import {
   DMChannel,
   Message,
   NewsChannel,
+  StreamDispatcher,
   TextChannel,
   VoiceChannel,
   VoiceConnection,
@@ -23,6 +24,8 @@ export interface musicQueue {
   songs: Array<Song>;
   volume: number;
   playing: boolean;
+  dispatcher: StreamDispatcher | null;
+  currentSong?: Song;
 }
 
 class Music {
@@ -36,11 +39,13 @@ class Music {
       songs: [],
       volume: 5,
       playing: true,
+      dispatcher: null,
     };
 
     Store.musicQueues.set(musicQueue.guild, musicQueue);
     return musicQueue;
   }
+
   async getSongInfo(url: string): Promise<Song> {
     const songInfo = await ytdl.getInfo(url);
     return {
@@ -49,9 +54,9 @@ class Music {
       duration: Number(songInfo.videoDetails.lengthSeconds),
     };
   }
-  async play(message: Message, song: Song): Promise<void> {
-    if (!message.guild) return;
-    const serverQueue = Store.musicQueues.get(message.guild.id);
+
+  async play(id: string, song?: Song, timer = 0): Promise<void> {
+    const serverQueue = Store.musicQueues.get(id);
     if (!serverQueue || !serverQueue.connection) {
       return;
     }
@@ -61,29 +66,47 @@ class Music {
       return;
     }
 
-    serverQueue.playing = true
+    serverQueue.playing = true;
 
-    const dispatcher = serverQueue.connection
-      .play(ytdl(song.url, { filter: 'audioonly' }))
+    serverQueue.currentSong = song;
+    serverQueue.dispatcher = serverQueue.connection
+      .play(ytdl(song.url, { filter: 'audioonly', begin: timer }))
       .on('finish', () => {
         serverQueue.songs.shift();
-        this.play(message, serverQueue.songs[0]);
+        this.play(id, serverQueue.songs[0]);
       })
       .on('error', (error: Error) => {
         console.error(error);
       });
 
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    serverQueue.dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
   }
 
-  leave(serverQueue: musicQueue) {
-    Store.musicQueues.delete(serverQueue.guild);
+  pause(serverQueue: musicQueue) {
+    serverQueue.playing = false;
+    serverQueue.dispatcher?.pause();
+  }
+
+  resume(serverQueue: musicQueue, timer: number) {
+    if (!serverQueue.connection || !serverQueue.currentSong) {
+      return;
+    }
+
+    // TODO: how to resume even when the dispatcher is override 🤡
+    this.play(
+      serverQueue.guild,
+      serverQueue.currentSong,
+      Math.round(timer / 1000),
+    );
+
+    // serverQueue.dispatcher?.resume();
+    serverQueue.playing = true;
   }
 
   stop(serverQueue: musicQueue) {
-    serverQueue.playing = false
-    serverQueue.songs = []
+    serverQueue.playing = false;
+    serverQueue.songs = [];
     serverQueue.connection?.dispatcher?.end();
   }
 }

@@ -9,19 +9,26 @@ export default new Command({
   name: 'play',
   description: 'Play a youtube music.',
   async handle({ message, logger }) {
-    const args = message.content.split(/ +/);
+    const args = message.content.split(/ +/).slice(1);
     if (!message.member || !message.client.user || !message.guild) return;
 
-    const validate = ytdl.validateURL(args[1]);
+    const guildId = message.guild.id;
+
+    if (!args.length) {
+      message.reply('Invalid syntax.');
+      return;
+    }
+
+    const validate = ytdl.validateURL(args[0]);
     // Valid Video URL
-    if (args[1].startsWith('http') && !validate) {
+    if (args[0].startsWith('http') && !validate) {
       message.reply('Please input a **valid** URL.');
       return;
     } else {
       // Search video
-      const query = args.slice(1).join(' ');
+      const query = args.join(' ');
       const videos = await Youtube.search(query);
-      args[1] = `https://www.youtube.com/watch?v=${videos[0].id}`;
+      args[0] = `https://www.youtube.com/watch?v=${videos[0].id}`;
     }
 
     const serverQueue = Store.musicQueues.get(message.guild.id);
@@ -31,20 +38,18 @@ export default new Command({
       message.channel.send('You need to be in a voice channel to play music!');
       return;
     }
-    const song = await Music.getSongInfo(args[1]);
+    const song = await Music.getSongInfo(args[0]);
 
     if (!serverQueue) {
       const musicQueue = Music.createQueue(message, voiceChannel);
       musicQueue.songs.push(song);
-
       try {
         musicQueue.connection = await voiceChannel.join();
         musicQueue.connection.once('disconnect', () => {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          Store.musicQueues.delete(message.guild!.id);
+          Store.musicQueues.delete(guildId);
         });
 
-        Music.play(message, musicQueue.songs[0]);
+        Music.play(guildId, musicQueue.songs[0]);
       } catch (err) {
         logger.error(err);
         Store.musicQueues.delete(message.guild.id);
@@ -54,7 +59,7 @@ export default new Command({
     } else {
       serverQueue.songs.push(song);
       if (!serverQueue.playing) {
-        Music.play(message, serverQueue.songs[0]);
+        Music.play(guildId, serverQueue.songs[0]);
       } else {
         message.channel.send(`${song.title} has been added to the queue!`);
       }

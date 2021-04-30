@@ -57,7 +57,8 @@ export default new Command({
     );
     queue.songs.push(song);
     queue.connection = await channel.join();
-    Music.play(message, queue.songs[0]);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    Music.play(message.guild!.id, queue.songs[0]);
 
     setTimeout(async () => {
       // Reset permissions
