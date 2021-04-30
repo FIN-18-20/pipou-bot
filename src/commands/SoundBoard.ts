@@ -31,11 +31,13 @@ export default new Command({
     }
 
     const guildId = message.guild.id;
-    const soundPath = Store.sounds.get(args[0].toLowerCase());
-    if (!soundPath) {
+    const soundsFound = Store.soundNames.search(args.join('').toLowerCase());
+    if (!soundsFound.length) {
       message.channel.send('Sound not found!');
       return;
     }
+    const soundPath = Store.sounds.get(soundsFound[0].item);
+    if (!soundPath) return;
 
     let serverQueue = Store.musicQueues.get(guildId);
     let previousSongTimer = 0;

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import Fuse from 'fuse.js';
 import { musicQueue } from './Music';
 import rrhQuotes from '../../data/rrh.json';
 
@@ -17,6 +18,7 @@ const Store = {
   inspiroBotQueues: new Map<string, boolean>(),
   rrhQuotes,
   sounds,
+  soundNames: new Fuse(Array.from(sounds.keys()), { includeScore: true }),
 };
 
 export default Store;
