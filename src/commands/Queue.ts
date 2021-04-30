@@ -10,7 +10,7 @@ export default new Command({
     if (!message.guild) return;
 
     const serverQueue = Store.musicQueues.get(message.guild.id);
-    if (!serverQueue) {
+    if (!serverQueue || !serverQueue.songs.length) {
       message.channel.send('There is no song in the queue!');
       return;
     }

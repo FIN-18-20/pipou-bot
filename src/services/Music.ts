@@ -61,6 +61,8 @@ class Music {
       return;
     }
 
+    serverQueue.playing = true
+
     const dispatcher = serverQueue.connection
       .play(ytdl(song.url, { filter: 'audioonly' }))
       .on('finish', () => {
@@ -75,9 +77,14 @@ class Music {
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
   }
 
-  stop(serverQueue: musicQueue) {
-    serverQueue.connection?.dispatcher?.end();
+  leave(serverQueue: musicQueue) {
     Store.musicQueues.delete(serverQueue.guild);
+  }
+
+  stop(serverQueue: musicQueue) {
+    serverQueue.playing = false
+    serverQueue.songs = []
+    serverQueue.connection?.dispatcher?.end();
   }
 }
 

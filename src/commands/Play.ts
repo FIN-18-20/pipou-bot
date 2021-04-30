@@ -53,7 +53,11 @@ export default new Command({
       }
     } else {
       serverQueue.songs.push(song);
-      message.channel.send(`${song.title} has been added to the queue!`);
+      if (!serverQueue.playing) {
+        Music.play(message, serverQueue.songs[0]);
+      } else {
+        message.channel.send(`${song.title} has been added to the queue!`);
+      }
       return;
     }
   },
