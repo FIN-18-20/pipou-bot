@@ -16,6 +16,7 @@ export interface Song {
 }
 
 export interface musicQueue {
+  guild: string;
   textChannel: TextChannel | DMChannel | NewsChannel;
   voiceChannel: VoiceChannel;
   connection: null | VoiceConnection;
@@ -27,6 +28,8 @@ export interface musicQueue {
 class Music {
   createQueue(message: Message, voiceChannel: VoiceChannel) {
     const musicQueue: musicQueue = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      guild: message.guild!.id,
       textChannel: message.channel,
       voiceChannel: voiceChannel,
       connection: null,
@@ -35,8 +38,7 @@ class Music {
       playing: true,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    Store.musicQueues.set(message.guild!.id, musicQueue);
+    Store.musicQueues.set(musicQueue.guild, musicQueue);
     return musicQueue;
   }
   async getSongInfo(url: string): Promise<Song> {
@@ -50,13 +52,12 @@ class Music {
   async play(message: Message, song: Song): Promise<void> {
     if (!message.guild) return;
     const serverQueue = Store.musicQueues.get(message.guild.id);
-    if (!serverQueue) {
+    if (!serverQueue || !serverQueue.connection) {
       return;
     }
 
-    if (!song || !serverQueue.connection) {
-      serverQueue.voiceChannel.leave();
-      Store.musicQueues.delete(message.guild.id);
+    if (!song) {
+      this.stop(serverQueue);
       return;
     }
 
@@ -66,15 +67,17 @@ class Music {
         serverQueue.songs.shift();
         this.play(message, serverQueue.songs[0]);
       })
-      .on('error', (error: Error) => console.error(error));
+      .on('error', (error: Error) => {
+        console.error(error);
+      });
 
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
   }
 
   stop(serverQueue: musicQueue) {
-    serverQueue.songs = [];
-    serverQueue.connection?.dispatcher.end();
+    serverQueue.connection?.dispatcher?.end();
+    Store.musicQueues.delete(serverQueue.guild);
   }
 }
 
