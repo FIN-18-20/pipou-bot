@@ -3,7 +3,7 @@ import path from 'path';
 import { musicQueue } from './Music';
 import rrhQuotes from '../../data/rrh.json';
 
-const directory = path.join(__dirname, '../../data/sounds');
+const directory = path.resolve(process.cwd(), 'data/sounds');
 const sounds = new Map<string, string>();
 fs.readdirSync(directory).forEach((name) => {
   sounds.set(
