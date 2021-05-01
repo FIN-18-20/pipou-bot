@@ -15,7 +15,7 @@ export default new Command({
     if (!args.length) {
       const embed = new MessageEmbed()
         .setColor('#FBBF24')
-        .setTitle(`${Store.sounds.size} Available sounds`);
+        .setTitle(`:loudspeaker:  ${Store.sounds.size} Available sounds`);
 
       embed.setDescription(Array.from(Store.sounds.keys()).join('\n'));
 
