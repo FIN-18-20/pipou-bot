@@ -51,7 +51,7 @@ export default new Command({
 
     const songsToAdd: Song[] = [];
     if (isPlaylist && playlistId) {
-      const playlist = await Youtube.getPlaylist(playlistId);
+      const playlist = await Youtube.getPlaylist(playlistId).catch(() => null);
       if (!playlist) {
         message.reply('Please input a **valid** Playlist URL.');
         return;
