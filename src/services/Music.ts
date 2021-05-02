@@ -26,6 +26,7 @@ export interface musicQueue {
   playing: boolean;
   dispatcher: StreamDispatcher | null;
   currentSong?: Song;
+  currentSongPauseTimer?: number;
 }
 
 class Music {
@@ -70,7 +71,7 @@ class Music {
 
     serverQueue.currentSong = song;
     serverQueue.dispatcher = serverQueue.connection
-      .play(ytdl(song.url, { filter: 'audioonly', begin: timer }))
+      .play(ytdl(song.url, { filter: 'audioonly' }), { seek: timer })
       .on('finish', () => {
         serverQueue.songs.shift();
         this.play(id, serverQueue.songs[0]);
@@ -85,27 +86,32 @@ class Music {
 
   pause(serverQueue: musicQueue) {
     serverQueue.playing = false;
+    serverQueue.currentSongPauseTimer =
+      serverQueue.connection?.dispatcher?.streamTime;
     serverQueue.dispatcher?.pause();
   }
 
-  resume(serverQueue: musicQueue, timer = 0) {
+  resume(serverQueue: musicQueue) {
     if (!serverQueue.connection || !serverQueue.currentSong) {
       return;
     }
 
-    // TODO: how to resume even when the dispatcher is override 🤡
+    const timer = serverQueue.currentSongPauseTimer ?? 0;
+
     this.play(
       serverQueue.guild,
       serverQueue.currentSong,
       Math.round(timer / 1000),
     );
 
-    // serverQueue.dispatcher?.resume();
     serverQueue.playing = true;
+    serverQueue.currentSongPauseTimer = 0;
   }
 
   stop(serverQueue: musicQueue) {
     serverQueue.playing = false;
+    serverQueue.currentSong = undefined;
+    serverQueue.currentSongPauseTimer = undefined;
     serverQueue.songs = [];
     serverQueue.connection?.dispatcher?.end();
   }

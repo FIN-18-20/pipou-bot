@@ -40,13 +40,8 @@ export default new Command({
     if (!soundPath) return;
 
     let serverQueue = Store.musicQueues.get(guildId);
-    let previousSongTimer = 0;
     if (serverQueue && serverQueue.connection) {
-      // const oldConnection = serverQueue.connection;
-      previousSongTimer = serverQueue.connection?.dispatcher?.streamTime;
       Music.pause(serverQueue);
-      // const soundConnection = await message.member?.voice.channel?.join();
-      // serverQueue.connection = oldConnection;
     }
     // Create connection
     else {
@@ -60,7 +55,7 @@ export default new Command({
 
     serverQueue.connection.play(soundPath).on('finish', () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      Music.resume(serverQueue!, previousSongTimer);
+      Music.resume(serverQueue!);
     });
   },
 });
