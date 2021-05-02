@@ -16,6 +16,10 @@ class YouTubeService {
     this._youtube = new YouTube(this._apiKey);
   }
 
+  async getPlaylist(id: string) {
+    return this._youtube.getPlaylistByID(id);
+  }
+
   async search(query: string, number = 1) {
     return this._youtube.searchVideos(query, number);
   }

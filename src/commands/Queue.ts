@@ -15,7 +15,7 @@ export default new Command({
       return;
     }
 
-    const songsPerPage = 25;
+    const songsPerPage = 15;
     const nbSongsInQueue = serverQueue.songs.length - 1;
     const pageNumber = 1;
     const pageTotal = Math.floor((nbSongsInQueue - 1) / songsPerPage) + 1;
