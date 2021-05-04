@@ -92,12 +92,12 @@ export default new Command({
         serverQueue.currentSong = nextSong;
       }
       if (!serverQueue.playing) {
-        Music.play(guildId, serverQueue.songs[0]);
+        Music.play(guildId, nextSong);
       } else {
         const msg =
           songsToAdd.length > 1
             ? `**${songsToAdd.length}** sounds have`
-            : `${nextSong.title} has`;
+            : `${songsToAdd[0].title} has`;
 
         message.channel.send(`${msg} been added to the queue!`);
       }
