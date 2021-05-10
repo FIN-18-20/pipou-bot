@@ -78,6 +78,7 @@ export default new Command({
         });
 
         Music.play(guildId, musicQueue.songs[0]);
+        message.channel.send(`Start playing: **${musicQueue.songs[0].title}**`);
       } catch (err) {
         logger.error(err);
         Store.musicQueues.delete(message.guild.id);
@@ -93,6 +94,7 @@ export default new Command({
       }
       if (!serverQueue.playing) {
         Music.play(guildId, nextSong);
+        message.channel.send(`Start playing: **${nextSong.title}**`);
       } else {
         const msg =
           songsToAdd.length > 1
