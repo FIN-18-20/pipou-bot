@@ -41,7 +41,9 @@ export default new Command({
 
     embed.setDescription(description.join('\n'));
     embed.setFooter(
-      `Groups created randomly at ${new Date().toLocaleTimeString('en-GB')}.`,
+      `Groups created randomly at ${new Date().toLocaleTimeString('en-GB', {
+        timeZone: 'Europe/Zurich',
+      })}.`,
     );
 
     message.channel.send(embed);
