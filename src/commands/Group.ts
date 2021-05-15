@@ -41,7 +41,7 @@ export default new Command({
 
     embed.setDescription(description.join('\n'));
     embed.setFooter(
-      `Groups created randomly at ${new Date().toLocaleTimeString()}.`,
+      `Groups created randomly at ${new Date().toLocaleTimeString('en-GB')}.`,
     );
 
     message.channel.send(embed);
