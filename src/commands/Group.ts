@@ -19,8 +19,10 @@ export default new Command({
     }
 
     const size = Number(strSize);
-    if (names.length < size) {
-      message.channel.send(ErrorEmbed('Size is too big you dumbo.'));
+    if (names.length < size || size <= 0) {
+      message.channel.send(
+        ErrorEmbed(`Size is invalid you dumbo: [1, ${names.length}]`),
+      );
       return;
     }
 
