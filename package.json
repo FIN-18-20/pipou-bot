@@ -32,7 +32,7 @@
     "pino": "^6.11.2",
     "redis": "^3.1.1",
     "simple-youtube-api": "^5.2.1",
-    "ytdl-core": "^4.5.0"
+    "ytdl-core": "git://github.com/fent/node-ytdl-core.git#d1f535712410eebd79a7468abd07d94f8c4ebe5a"
   },
   "devDependencies": {
     "@types/cron": "^1.7.2",
