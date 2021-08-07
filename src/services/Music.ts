@@ -71,7 +71,9 @@ class Music {
 
     serverQueue.currentSong = song;
     serverQueue.dispatcher = serverQueue.connection
-      .play(ytdl(song.url, { filter: 'audioonly' }), { seek: timer })
+      .play(ytdl(song.url, { filter: 'audioonly', highWaterMark: 1 << 25 }), {
+        seek: timer,
+      })
       .on('finish', () => {
         serverQueue.songs.shift();
         this.play(id, serverQueue.songs[0]);
