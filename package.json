@@ -27,6 +27,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
+    "jsdom": "^17.0.0",
     "luxon": "^1.26.0",
     "make-promises-safe": "^5.1.0",
     "pino": "^6.11.2",
