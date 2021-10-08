@@ -41,7 +41,7 @@ interface ProviderSearch {
 
 async function getProviders(media: string, id: number): Promise<ProviderSearchResult> {
   const providersData: ProviderSearch = await got
-    .get(`https://api.movie-park.ch/api/${media}/${id}/watch/providers?api_key=APIKEY`)
+    .get(`https://api.movie-park.ch/${media}/${id}/watch/providers?api_key=APIKEY`)
     .json();
 
   const providersResults: ProviderSearchResult = {};
@@ -102,7 +102,7 @@ export default new Command({
     const query = args.join(' ');
 
     const data: MultiSearch = await got
-      .get(`https://api.movie-park.ch/api/search/multi?api_key=APIKEY&language=en-US&query=${query}&page=1&include_adult=false`)
+      .get(`https://api.movie-park.ch/search/multi?api_key=APIKEY&language=en-US&query=${query}&page=1&include_adult=false`)
       .json();
 
     if (data.total_results === 0 || data.results[0].media_type === "person") {
@@ -136,11 +136,7 @@ export default new Command({
     }
     const embed = new MessageEmbed()
       .setColor('#d70745')
-      .setAuthor(
-        'Movie-park.ch',
-        'https://movie-park.ch/_nuxt/icons/icon_64x64.1d1277.png',
-        'https://movie-park.ch',
-      )
+      .setAuthor('Movie-park.ch',)
       .setTitle(title)
       .setThumbnail(`https://image.tmdb.org/t/p/w154/${dataResut.poster_path}`)
       .addFields(...embedFields)
