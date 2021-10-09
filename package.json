@@ -9,6 +9,7 @@
     "format": "prettier --write src tests",
     "lint": "eslint src --ext ts",
     "lint-fix": "npm run lint -- --fix",
+    "dev": "npm run start",
     "start": "nodemon --watch \"src/**/*.ts\" -e ts --exec \"ts-node src/bot.ts | pino-pretty\"",
     "test": "npm run test-only && npm run lint && npm run check-types",
     "test-only": "jest",
@@ -56,6 +57,9 @@
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": "16.x"
+    "node": "14.x"
+  },
+  "volta": {
+    "node": "14.18.0"
   }
 }
