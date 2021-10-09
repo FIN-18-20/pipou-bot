@@ -37,8 +37,9 @@ export default new Command({
     } else {
       // Search video
       const query = args.join(' ');
-      const videos = await Youtube.search(query);
-      args[0] = `https://www.youtube.com/watch?v=${videos[0].id}`;
+      const video = await Youtube.getVideo(query);
+      if (!video) return;
+      args[0] = `https://www.youtube.com/watch?v=${video.id}`;
     }
 
     const serverQueue = Store.musicQueues.get(message.guild.id);

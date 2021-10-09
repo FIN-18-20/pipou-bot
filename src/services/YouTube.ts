@@ -20,7 +20,11 @@ class YouTubeService {
     return this._youtube.getPlaylistByID(id);
   }
 
-  async search(query: string, number = 1) {
+  async getVideo(query: string) {
+    return this._youtube.getVideo(query);
+  }
+
+  async searchVideos(query: string, number = 1) {
     return this._youtube.searchVideos(query, number);
   }
 }
