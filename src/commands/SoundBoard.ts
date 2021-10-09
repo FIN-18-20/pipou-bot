@@ -1,5 +1,5 @@
 import { MessageEmbed } from 'discord.js';
-import { Command } from '../framework';
+import { Command, splitArray } from '../framework';
 import Music from '../services/Music';
 import Store from '../services/Store';
 
@@ -13,11 +13,18 @@ export default new Command({
     const args = message.content.split(/ +/).slice(1);
 
     if (!args.length) {
+      const nbColumns = 3;
+      const names = Array.from(Store.sounds.keys()).map(
+        (name) => '```' + name + '```',
+      );
+      const splitNames = splitArray(names, Math.ceil(names.length / nbColumns));
+
       const embed = new MessageEmbed()
         .setColor('#FBBF24')
         .setTitle(`:loudspeaker:  ${Store.sounds.size} Available sounds`);
 
-      embed.setDescription(Array.from(Store.sounds.keys()).join('\n'));
+      for (let i = 0; i < nbColumns; ++i)
+        embed.addField('\u200B', splitNames[i].join(''), true);
 
       message.channel.send(embed);
       return;
