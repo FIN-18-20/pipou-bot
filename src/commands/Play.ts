@@ -79,7 +79,7 @@ export default new Command({
 
         Music.play(guildId, musicQueue.songs[0]);
         message.channel.send(`Start playing: **${musicQueue.songs[0].title}**`);
-      } catch (err) {
+      } catch (err: any) {
         logger.error(err);
         Store.musicQueues.delete(message.guild.id);
         message.channel.send(err);
