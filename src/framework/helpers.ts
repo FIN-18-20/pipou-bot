@@ -57,3 +57,10 @@ export function isNumber(value: unknown): boolean {
     (typeof value === 'string' && value.trim() != '' && !isNaN(Number(value)))
   );
 }
+
+export function splitArray<T>(array: Array<T>, size: number): Array<Array<T>> {
+  const arrayOfArrays = [];
+  for (let i = 0; i < array.length; i += size)
+    arrayOfArrays.push(array.slice(i, i + size));
+  return arrayOfArrays;
+}
