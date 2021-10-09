@@ -94,6 +94,7 @@ class Music {
 
   resume(serverQueue: musicQueue) {
     if (!serverQueue.connection || !serverQueue.currentSong) {
+      serverQueue.playing = false;
       return;
     }
 
