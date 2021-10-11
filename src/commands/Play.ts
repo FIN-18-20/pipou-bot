@@ -59,11 +59,13 @@ export default new Command({
       }
       const videos = await playlist.getVideos();
       videos.forEach((v) => {
-        songsToAdd.push({
-          title: v.title,
-          url: v.url,
-          duration: v.duration?.seconds || 0, // Todo: how to get duration without fetching every video
-        });
+        if ((v.raw as any)?.status?.privacyStatus === 'public') {
+          songsToAdd.push({
+            title: v.title,
+            url: v.url,
+            duration: v.duration?.seconds || 0, // Todo: how to get duration without fetching every video
+          });
+        }
       });
     } else {
       songsToAdd.push(await Music.getSongInfo(args[0]));
