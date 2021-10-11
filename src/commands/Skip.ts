@@ -19,6 +19,6 @@ export default new Command({
       message.channel.send('There is no song that I could skip!');
       return;
     }
-    serverQueue.connection?.dispatcher.end();
+    serverQueue.connection?.dispatcher?.end();
   },
 });

@@ -16,7 +16,7 @@ export default new Command({
       return;
     }
     const song = serverQueue.songs[0];
-    const streamTime = serverQueue.connection?.dispatcher.streamTime || 0;
+    const streamTime = serverQueue.connection?.dispatcher?.streamTime || 0;
     const description = [
       `[${song.title}](${song.url})`,
       `\`${secToTime(streamTime / 1000)}/${secToTime(song.duration)}\``,
