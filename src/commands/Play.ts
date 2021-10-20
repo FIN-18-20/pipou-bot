@@ -34,12 +34,11 @@ export default new Command({
         message.reply('Please input a **valid** URL.');
         return;
       }
-    } else {
+    } else if (!validate) {
       // Search video
       const query = args.join(' ');
-      const video = await Youtube.getVideo(query);
-      if (!video) return;
-      args[0] = `https://www.youtube.com/watch?v=${video.id}`;
+      const videos = await Youtube.searchVideos(query);
+      args[0] = `https://www.youtube.com/watch?v=${videos[0].id}`;
     }
 
     const serverQueue = Store.musicQueues.get(message.guild.id);
