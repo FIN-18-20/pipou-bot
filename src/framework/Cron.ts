@@ -60,7 +60,7 @@ export class Cron extends Base {
     try {
       logger.debug('execute cron handler');
       await this.handler({ date, client: bot.client, logger });
-    } catch (error) {
+    } catch (error: any) {
       logger.error(error, 'cron handler error');
     }
   }

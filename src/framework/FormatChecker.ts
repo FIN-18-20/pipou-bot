@@ -80,7 +80,7 @@ export class FormatChecker extends Base {
       await author
         .send(warningContent.join('\n'))
         .then((warning) => warning.suppressEmbeds(true));
-    } catch (err) {
+    } catch (err: any) {
       logger.error(
         err,
         'failed to send private message to user %s',
