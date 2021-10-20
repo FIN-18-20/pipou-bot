@@ -71,7 +71,7 @@ function getVideo(videos: Array<Video>): Video | null {
   if (videos.length === 0) {
     return null;
   }
-  const video = videos.find(video => video.type === "Trailer" || video.type === "Teaser" && video.site === "Youtube");
+  const video = videos.find(video => video.type === "Trailer" || video.type === "Teaser" && video.site === "YouTube");
   return video === undefined ? null : video;
 }
 
@@ -146,7 +146,9 @@ export default new Command({
 
     const embedFields: EmbedFieldData[] = [];
 
-    embedFields.push({ name: "Overview", value: detailedData.overview, inline: false});
+    if (detailedData.overview) {
+      embedFields.push({ name: "Overview", value: detailedData.overview, inline: false});
+    }
 
     const video = getVideo(detailedData.videos.results);
 
