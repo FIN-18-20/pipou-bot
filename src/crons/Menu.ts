@@ -7,75 +7,71 @@ export default new Cron({
   enabled: true,
   name: 'Menu',
   description:
-    'Check each day the lunch menu and post it in the #blabla channel.',
-  schedule: '*/1 * * * *',
+    'Check each day the lunch menu and post it in the #menu channel.',
+  schedule: '0 8 * * 1-5',
   async handle(context) {
-    const menu = await getTodayMenu();
-    // if (!latestCommitStrip) {
-    //   return;
-    // }
-    // context.logger.info(`Found a new CommitStrip (${latestCommitStrip.id})`);
+    const menus = await getTodayMenu();
+    if (!menus) return;
 
-    // const channel = findTextChannelByName(context.client, 'gif');
-    // if (!channel) {
-    //   throw new Error('found no #gif channel');
-    // }
+    const channel = findTextChannelByName(context.client, 'menu');
+    if (!channel) {
+      throw new Error('found no #menu channel');
+    }
 
-    // await channel.send(
-    //   `${latestCommitStrip.title} - ${latestCommitStrip.link}`,
-    //   new MessageEmbed({ image: { url: latestCommitStrip.imageUrl } }),
-    // );
+    const day = new Date().toLocaleDateString('fr-FR', {
+      timeZone: 'Europe/Zurich',
+      weekday: 'long',
+    });
+
+    const date = new Date().toLocaleDateString('fr-FR', {
+      timeZone: 'Europe/Zurich',
+      dateStyle: 'full',
+    });
+
+    const embed = new MessageEmbed()
+      .setColor('#EA580C')
+      .setTitle(`:fork_and_knife: Menus de ${day}`)
+      .setThumbnail(
+        'https://pbs.twimg.com/profile_images/1339474601097748480/PVp2lBhv_400x400.jpg',
+      )
+      .setFooter(date);
+
+    for (let i = 0; i < menus.length; i++) {
+      const title = '```' + 'Menu' + (i + 1) + '```';
+      embed.addField(title, menus[i].join('\n'), true);
+    }
+
+    await channel.send(embed);
   },
 });
 
 interface MenuAPIResponse {
   date: string;
-  menus: Array<Menu>;
+  menus: Array<RawMenu>;
 }
 
-interface Menu {
+interface RawMenu {
   starter: string;
   mainCourse: Array<string>;
   dessert: string;
   containsPork: boolean;
 }
 
-async function getTodayMenu(): Promise<MenuAPIResponse | null> {
+type Menu = Array<string>;
+
+async function getTodayMenu(): Promise<Array<Menu> | null> {
   const { body: response } = await got<MenuAPIResponse>(
     'https://apix.blacktree.io/top-chef/today',
     { responseType: 'json' },
   );
 
-  console.log(response);
-  return null;
+  if (!response || !response.menus.length) {
+    return null;
+  }
 
-  // if (posts.length === 0) {
-  //   return null;
-  // }
-
-  // const [strip] = posts;
-
-  // const stripDate = new Date(strip.date);
-  // const stripTime = stripDate.getTime();
-  // const nowTime = now.getTime();
-  // const thirtyMinutes = 1000 * 60 * 30;
-
-  // if (nowTime - stripTime > thirtyMinutes) {
-  //   // Ignore if the strip was not posted in the last 30 minutes
-  //   return null;
-  // }
-
-  // const stripImageUrlReg = /src="([^"]+)"/;
-  // const urlMatch = stripImageUrlReg.exec(strip.content.rendered);
-  // if (!urlMatch) {
-  //   return null;
-  // }
-
-  // return {
-  //   id: strip.id,
-  //   date: stripDate,
-  //   link: strip.link,
-  //   title: strip.title.rendered,
-  //   imageUrl: urlMatch[1],
-  // };
+  return response.menus
+    .filter((m) => m.starter.length)
+    .map((m) => {
+      return [m.starter, ...m.mainCourse, m.dessert];
+    });
 }
