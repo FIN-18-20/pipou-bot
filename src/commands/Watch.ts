@@ -5,11 +5,16 @@ import { MessageEmbed, EmbedFieldData } from 'discord.js';
 interface MultiSearchResult {
   id: number,
   media_type: string,
+}
+
+interface DetailedSearchResult {
   title: string | null,
   name: string | null,
   overview: string | null,
   poster_path: string | null,
-  backdrop_path: string | null
+  backdrop_path: string | null,
+  videos: VideosSearch,
+  'watch/providers': ProviderSearch
 }
 
 interface MultiSearch {
@@ -19,6 +24,15 @@ interface MultiSearch {
   total_pages: number
 }
 
+interface VideosSearch {
+  results: Array<Video>
+}
+interface Video {
+  name: string,
+  key: string,
+  type: string,
+  site: string
+}
 interface Provider {
   provider_name: string
 }
@@ -35,23 +49,32 @@ interface ProviderSearchResult {
 }
 
 interface ProviderSearch {
-  id: number,
   results: ProviderSearchResult
 }
 
-async function getProviders(media: string, id: number): Promise<ProviderSearchResult> {
-  const providersData: ProviderSearch = await got
-    .get(`https://api.movie-park.ch/${media}/${id}/watch/providers?api_key=APIKEY`)
-    .json();
-
+function getProviders(providers: ProviderSearch): ProviderSearchResult {
   const providersResults: ProviderSearchResult = {};
-  for (const key in providersData.results) {
+  if (Object.keys(providers).length === 0) {
+    return providersResults;
+  }
+
+  for (const key in providers.results) {
     if (key === 'CH' || key === 'US') {
-      providersResults[key] = providersData.results[key]
+      providersResults[key] = providers.results[key]
     }
   }
   return providersResults;
 }
+
+function getVideo(videos: Array<Video>): Video | null {
+  
+  if (videos.length === 0) {
+    return null;
+  }
+  const video = videos.find(video => video.type === "Trailer" || video.type === "Teaser" && video.site === "Youtube");
+  return video === undefined ? null : video;
+}
+
 
 function addFields(countryProvider: ProvidersByCountry, emoji: string): EmbedFieldData[] {
   const embedFields: EmbedFieldData[] = []
@@ -113,33 +136,48 @@ export default new Command({
     }
 
     const dataResut: MultiSearchResult = data.results[0];
-    const title = dataResut.title === undefined ? dataResut.name : dataResut.title;
-    const providersResults = await getProviders(dataResut.media_type, dataResut.id);
+    const detailedData : DetailedSearchResult = await got
+      .get(`https://api.movie-park.ch/${dataResut.media_type}/${dataResut.id}?api_key=APIKEY&append_to_response=videos,watch/providers`)
+      .json();
+    
+    const title = detailedData.title === undefined ? detailedData.name : detailedData.title;
 
-    if (!Object.keys(providersResults).length) {
-      message.channel.send(
-        "No result for: " + query,
-      );
-      return;
-    }
-
-    const chProvider: ProvidersByCountry | null = providersResults['CH'] ?? null;
-    const usProvider: ProvidersByCountry | null = providersResults['US'] ?? null;
+    const providersResults = getProviders(detailedData['watch/providers']);
 
     const embedFields: EmbedFieldData[] = [];
 
-    if (chProvider) {
-      embedFields.push(...addFields(chProvider, '🇨🇭'));
+    embedFields.push({ name: "Overview", value: detailedData.overview, inline: false});
+
+    const video = getVideo(detailedData.videos.results);
+
+    if (video) {
+      embedFields.push({ name: `${video.type}`, value: `[${video.name}](https://youtube.com/watch?v=${video.key})`, inline: true});
     }
-    if (usProvider) {
-      embedFields.push(...addFields(usProvider, '🇺🇸'));
+
+    if (Object.keys(providersResults).length) {
+      const chProvider: ProvidersByCountry | null = providersResults['CH'] ?? null;
+      const usProvider: ProvidersByCountry | null = providersResults['US'] ?? null;
+
+      if (chProvider) {
+        embedFields.push(...addFields(chProvider, '🇨🇭'));
+      }
+      if (usProvider) {
+        embedFields.push(...addFields(usProvider, '🇺🇸'));
+      }
     }
+    const posterURL = detailedData.poster_path
+                      ? `https://image.tmdb.org/t/p/w500/${detailedData.poster_path}` 
+                      : "https://via.placeholder.com/300x400.jpg/d70745/000000%20?text=No+Image";
+    const backdropURL = detailedData.backdrop_path
+                      ? `https://image.tmdb.org/t/p/w780/${detailedData.backdrop_path}` 
+                      : "https://via.placeholder.com/780x400.jpg/d70745/000000%20?text=No+Image";
     const embed = new MessageEmbed()
       .setColor('#d70745')
-      .setAuthor('Movie-park.ch',)
+      // .setAuthor('Movie-park.ch') will be added when website is up again
       .setTitle(title)
-      .setThumbnail(`https://image.tmdb.org/t/p/w154/${dataResut.poster_path}`)
+      .setThumbnail(posterURL)
       .addFields(...embedFields)
+      .setImage(backdropURL)
       .setFooter('Powered by Moviepark, TMDB & JustWatch')
     message.channel.send(embed);
   },
