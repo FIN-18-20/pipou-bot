@@ -75,7 +75,7 @@ export class Bot {
     let list: string[];
     try {
       list = fs.readdirSync(directory);
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 'ENOENT') {
         throw new Error(
           `Failed to load "${name}" in ${directory}. Directory could not be read`,
