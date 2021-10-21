@@ -8,10 +8,13 @@ export default new Cron({
   name: 'Menu',
   description:
     'Check each day the lunch menu and post it in the #menu channel.',
-  schedule: '0 8 * * 1-5',
+  schedule: '0 9 * * 1-5',
   async handle(context) {
     const menus = await getTodayMenu();
-    if (!menus) return;
+    if (!menus) {
+      context.logger.error('Menu not found.');
+      return;
+    }
 
     const channel = findTextChannelByName(context.client, 'menu');
     if (!channel) {
