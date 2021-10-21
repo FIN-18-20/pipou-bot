@@ -4,25 +4,26 @@ import Music from '../services/Music';
 
 export default new Command({
   enabled: true,
-  name: 'skip',
-  description: 'Skip a song.',
+  name: 'loop',
+  description: 'Loop the current playing song.',
   async handle({ message }) {
     if (!message.guild) return;
 
     const serverQueue = Store.musicQueues.get(message.guild.id);
+    if (!serverQueue || !serverQueue.playing) {
+      return;
+    }
     if (!message.member?.voice.channel) {
       message.channel.send(
-        'You have to be in a voice channel to skip the music!',
+        'You have to be in a voice channel to loop the music!',
       );
       return;
     }
-    if (!serverQueue) {
-      message.channel.send('There is no song that I could skip!');
-      return;
-    }
+    Music.loop(serverQueue);
     if(serverQueue.loop){
-      Music.loop(serverQueue);
+        message.channel.send('Music has been looped.');
+    } else{
+        message.channel.send('Music has been unlooped.');
     }
-    serverQueue.connection?.dispatcher?.end();
   },
 });
