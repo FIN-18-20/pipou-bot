@@ -8,15 +8,15 @@ export default new Cron({
   name: 'Menu',
   description:
     'Check each day the lunch menu and post it in the #menu channel.',
-  schedule: '0 9 * * 1-5',
-  async handle(context) {
+  schedule: '0 8 * * 1-5',
+  async handle({ client, logger }) {
     const menus = await getTodayMenu();
     if (!menus) {
-      context.logger.error('Menu not found.');
+      logger.error('Menu not found.');
       return;
     }
 
-    const channel = findTextChannelByName(context.client, 'menu');
+    const channel = findTextChannelByName(client, 'menu');
     if (!channel) {
       throw new Error('found no #menu channel');
     }
@@ -44,7 +44,14 @@ export default new Cron({
       embed.addField(title, menus[i].join('\n'), true);
     }
 
-    await channel.send(embed);
+    const bazar = client.emojis.cache.find((emoji) => emoji.name === 'Bazar');
+    const rrh = client.emojis.cache.find((emoji) => emoji.name === 'rrh2');
+
+    const message = await channel.send(embed);
+    if (bazar && rrh) {
+      await message.react(rrh);
+      await message.react(bazar);
+    }
   },
 });
 
