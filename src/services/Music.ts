@@ -121,7 +121,7 @@ class Music {
     serverQueue.connection?.dispatcher?.end();
   }
 
-  loop(serverQueue: musicQueue) {
+  toggleLoop(serverQueue: musicQueue) {
     serverQueue.loop = !serverQueue.loop;
   }
 }

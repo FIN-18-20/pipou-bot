@@ -19,7 +19,7 @@ export default new Command({
       );
       return;
     }
-    Music.loop(serverQueue);
+    Music.toggleLoop(serverQueue);
     if(serverQueue.loop){
         message.channel.send('Music has been looped.');
     } else{

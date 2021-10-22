@@ -21,7 +21,7 @@ export default new Command({
       return;
     }
     if(serverQueue.loop){
-      Music.loop(serverQueue);
+      Music.toggleLoop(serverQueue);
     }
     serverQueue.connection?.dispatcher?.end();
   },
