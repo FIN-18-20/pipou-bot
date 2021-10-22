@@ -167,6 +167,7 @@ export class Bot {
   public get commands(): Array<PublicCommand> {
     return this._commands.map((command) => ({
       name: command.name,
+      alias: command.alias,
       description: command.description,
     }));
   }
