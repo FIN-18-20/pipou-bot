@@ -24,6 +24,7 @@ export interface musicQueue {
   songs: Array<Song>;
   volume: number;
   playing: boolean;
+  loop: boolean;
   dispatcher: StreamDispatcher | null;
   currentSong?: Song;
   currentSongPauseTimer?: number;
@@ -40,6 +41,7 @@ class Music {
       songs: [],
       volume: 5,
       playing: true,
+      loop: false,
       dispatcher: null,
     };
 
@@ -68,14 +70,15 @@ class Music {
     }
 
     serverQueue.playing = true;
-
     serverQueue.currentSong = song;
     serverQueue.dispatcher = serverQueue.connection
       .play(ytdl(song.url, { filter: 'audioonly', highWaterMark: 1 << 25 }), {
         seek: timer,
       })
       .on('finish', () => {
-        serverQueue.songs.shift();
+        if(!serverQueue.loop){
+          serverQueue.songs.shift();
+        }
         this.play(id, serverQueue.songs[0]);
       })
       .on('error', (error: Error) => {
@@ -116,6 +119,10 @@ class Music {
     serverQueue.currentSongPauseTimer = undefined;
     serverQueue.songs = [];
     serverQueue.connection?.dispatcher?.end();
+  }
+
+  toggleLoop(serverQueue: musicQueue) {
+    serverQueue.loop = !serverQueue.loop;
   }
 }
 
