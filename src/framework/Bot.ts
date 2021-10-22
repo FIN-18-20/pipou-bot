@@ -111,6 +111,23 @@ export class Bot {
     return enabledExports;
   }
 
+  private verifyCommands() {
+    this._commands.forEach((command, commandIndex) => {
+      this._commands.forEach((otherCommand, otherCommandIndex) => {
+        if (command.name === otherCommand.name && commandIndex !== otherCommandIndex) {
+          throw new Error(`Bot has duplicated commands! ${command.name} already exists.`);
+        }
+        command.alias?.forEach((alias) => {
+          otherCommand.alias?.forEach((otherAlias) => {
+            if (alias === otherAlias && commandIndex !== otherCommandIndex) {
+              throw new Error(`Bot has duplicated alias for command ${command.name}! alias ${alias} from ${otherCommand.name} already exists. `);
+            }
+          })
+        })
+      });
+    })
+  }
+
   private startCommands() {
     this._commands.forEach((command) => command.start(this));
   }
@@ -169,6 +186,7 @@ export class Bot {
       ]);
       // To remove 'MaxListenersExceededWarning' warning in console
       this._client.setMaxListeners(this._commands.length);
+      this.verifyCommands();
       this.startCommands();
       this.startCrons();
       this.startFormatCheckers();

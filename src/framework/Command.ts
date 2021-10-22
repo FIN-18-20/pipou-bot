@@ -32,7 +32,7 @@ export interface PublicCommand {
 
 export class Command extends Base {
   private readonly delimiter = '!';
-  private readonly alias?: Array<string>;
+  private readonly _alias?: Array<string>;
   private readonly channelName?: string;
   private readonly handler: CommandHandler;
   private bot: Bot | undefined;
@@ -44,7 +44,7 @@ export class Command extends Base {
       this.channelName = config.channelName;
     }
     if (config.alias) {
-      this.alias = config.alias;
+      this._alias = config.alias;
     }
 
     this.handler = config.handle;
@@ -83,6 +83,10 @@ export class Command extends Base {
       logger.fatal('Error in Command');
       logger.fatal(error);
     }
+  }
+
+  public get alias() : Array<string> | undefined {
+    return this._alias;
   }
 
   public start(bot: Bot): void {
