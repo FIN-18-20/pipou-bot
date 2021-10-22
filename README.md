@@ -1,38 +1,38 @@
 # Pipou bot
 
-## Développement
+## Development
 
-### Prérequis
+### Prerequisites
 
 - Node.js v14
 - npm v6
 - Redis
 
-### Préparation de l'environnement
+### Preparation of the environment
 
-Installez les dépendances avec npm:
+Install the dependencies with npm:
 
 ```console
 npm ci
 ```
 
-Copiez le fichier `.env.example` en ajoutant le token de bot et l'adresse de connexion redis:
+Copy the file `.env.example`, add the bot token and the redis login address:
 
 ```console
 cp.env.example .env
 ```
 
-### Exécution du bot
+### Running the bot
 
 ```console
 npm start
 ```
 
-Cette commande exécute le fichier `src/bot.ts`, qui démarre le bot. Les changements dans le dossier `src` sont observés par `nodemon` et le bot est redémarré automatiquement.
+This command executes the `src/bot.ts` file, which starts the bot. Changes in the `src` folder are watched by `nodemon` and the bot is restarted automatically.
 
 ### Tests
 
-Le projet contient 3 scripts de test qui doivent passer pour tout commit poussé sur la branche `main`. Vous pouvez exécuter tous les tests avec la commande suivante:
+The project contains 3 test scripts that must pass for any commit pushed to the `main` branch. You can run all the tests with the following command:
 
 ```console
 npm test
@@ -41,53 +41,53 @@ npm test
 #### Tests TS
 
 ```console
-# Exécution des tests.
+# Run the tests.
 npm run test-only
 
-# Exécution des tests et création d'un rapport de couverture.
+# Run the tests and create a coverage report.
 npm run test-coverage
 ```
 
-Le framework de test [Jest](https://jestjs.io/) est utilisé pour exécuter les tests. Ceux-ci doivent être écrits en TypeScript dans le dossier `tests`. Essayez de conserver la même structure de dossiers que dans `src` pour organiser les tests.
+The test framework [Jest](https://jestjs.io/) is used to run the tests. These should be written in TypeScript in the `tests` folder. Try to keep the same folder structure as in `src` to organize the tests.
 
 #### Lint
 
 ```console
-# Exécution d'ESLint
+# Running ESLint
 npm run lint
 
-# Exécution d'ESLint avec correction automatique de ce qui peut l'être.
+# Run ESLint with automatic correction.
 npm run lint-fix
 ```
 
-Nous utilisons [ESLint](https://eslint.org/) ainsi que [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) pour l'analyse statique du code.
+We use [ESLint](https://eslint.org/) and [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) for static code analysis.
 
-#### Vérification des types TypeScript
+#### TypeScript type checking
 
 ```console
 npm run check-types
 ```
 
-Cette commande exécute le compilateur TypeScript avec l'option `--noEmit`. Elle permet de valider les types de l'entier du projet, y compris sur les fichiers qui ne sont pas testés avec Jest.
+This command runs the TypeScript compiler with the `--noEmit` option. It validates types for the entire project, including files that are not tested with Jest.
 
-### Écriture de fonctionnalités
+### Writing features
 
-#### Tâches cron
+#### Cron jobs
 
-Chaque tâche cron doit être écrite dans un fichier du dossier `src/crons`. Ce
-fichier doit instancier et exporter par défaut une instance de la classe Cron,
-en lui passant les paramètres de configuration suivants:
+Each cron job must be written to a file in the `src/crons` folder. This
+file must instantiate and export by default an instance of the Cron class,
+passing it the following configuration parameters:
 
-- `enabled`: boolean. Peut être mis à `false` pour désactiver la tâche.
-- `name`: string. Nom de la tâche. Utilisé dans les logs.
-- `description`: string. Description de ce que fait la tâche (en français).
-- `schedule`: string. Programme d'exécution. Vous pouvez utiliser [crontab guru](https://crontab.guru/) pour le préparer.
-- `handle`: function. Fonction exécutée selon le programme. Elle recevra un argument `context`, avec les propriétés:
-  - `date`: Date théorique d'exécution de la tâche.
-  - `client`: Instance du client discord.js.
-  - `logger`: Instance du logger pino.
+- `enabled`: boolean. Can be set to `false` to disable the task.
+- `name`: string. Name of the task. Used in the logs.
+- `description`: string. Description of what the task does.
+- `schedule`: string. Execution program. You can use [crontab guru](https://crontab.guru/) to prepare it.
+- `handle`: function. Function executed according to the program. It will receive a `context` argument, with properties:
+  - `date`: Theoretical date of execution of the task.
+  - `client`: Instance of the discord.js client.
+  - `logger`: Instance of the pino logger.
 
-Exemple:
+Example:
 
 ```ts
 import { Cron } from '../framework';
@@ -98,7 +98,10 @@ export default new Cron({
   description: 'Description',
   schedule: '*/30 * * * *',
   async handle(context) {
-    // Code exécuté selon le programme
+    // Code executed according to the schedule
   },
 });
 ```
+
+
+Translated with www.DeepL.com/Translator (free version)
