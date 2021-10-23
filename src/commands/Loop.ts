@@ -20,10 +20,10 @@ export default new Command({
       return;
     }
     Music.toggleLoop(serverQueue);
-    if(serverQueue.loop){
-        message.channel.send('Music has been looped.');
-    } else{
-        message.channel.send('Music has been unlooped.');
+    if (serverQueue.loop) {
+      message.channel.send('Music has been looped.');
+    } else {
+      message.channel.send('Music has been unlooped.');
     }
   },
 });

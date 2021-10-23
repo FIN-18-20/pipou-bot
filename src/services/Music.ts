@@ -76,7 +76,7 @@ class Music {
         seek: timer,
       })
       .on('finish', () => {
-        if(!serverQueue.loop){
+        if (!serverQueue.loop) {
           serverQueue.songs.shift();
         }
         this.play(id, serverQueue.songs[0]);

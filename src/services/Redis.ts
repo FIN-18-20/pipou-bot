@@ -6,9 +6,16 @@ class Redis {
 
   public get: (key: string) => Promise<string | null>;
   public set: (key: string, value: string) => Promise<unknown>;
-  public setex: (key: string, seconds: number, value: string) => Promise<string>;
+  public setex: (
+    key: string,
+    seconds: number,
+    value: string,
+  ) => Promise<string>;
   public keys: (pattern: string) => Promise<string[]>;
-  public scan: (cursor: string, options: string[]) => Promise<Array<string | string[]>>;
+  public scan: (
+    cursor: string,
+    options: string[],
+  ) => Promise<Array<string | string[]>>;
   public del: (key: string) => Promise<number>;
 
   constructor() {
@@ -40,14 +47,17 @@ class Redis {
    * @param cursor current position
    * @param pattern matching pattern
    */
-  public async scanMatchingKeys(cursor: string, pattern: string): Promise<string[]> {
-    const keys: string[] = []
+  public async scanMatchingKeys(
+    cursor: string,
+    pattern: string,
+  ): Promise<string[]> {
+    const keys: string[] = [];
     do {
       const scan = await this.scan(cursor, ['MATCH', pattern]);
-      cursor = (scan[0] as string);
+      cursor = scan[0] as string;
       keys.push(...(scan[1] as string[]));
-    } while (cursor !== '0')
-  
+    } while (cursor !== '0');
+
     return keys;
   }
 }

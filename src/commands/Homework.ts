@@ -114,11 +114,7 @@ export default new Command({
         'hw-' + channelName + '-*',
       );
       if (keys.length) {
-        const embedFields = await addEmbedFields(
-          keys,
-          false,
-          args[2] === '-v',
-        );
+        const embedFields = await addEmbedFields(keys, false, args[2] === '-v');
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for ' + channelName)
@@ -138,11 +134,7 @@ export default new Command({
     if (args[1] === 'show-all' && [2, 3].includes(args.length)) {
       const keys = await Redis.scanMatchingKeys('0', 'hw-*');
       if (keys.length) {
-        const embedFields = await addEmbedFields(
-          keys,
-          true,
-          args[2] === '-v',
-        );
+        const embedFields = await addEmbedFields(keys, true, args[2] === '-v');
         const embed = new MessageEmbed()
           .setColor('#fad541')
           .setTitle('Homeworks for all courses')
@@ -267,8 +259,7 @@ export default new Command({
           { name: 'Delete homework', value: '!hw delete homework-id' },
           {
             name: 'Modify homework',
-            value:
-              '!hw modify homework-id ["New description"] [dd.mm.yyyy]',
+            value: '!hw modify homework-id ["New description"] [dd.mm.yyyy]',
           },
         );
       message.channel.send(embed);

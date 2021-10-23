@@ -20,7 +20,7 @@ export default new Command({
       message.channel.send('There is no song that I could skip!');
       return;
     }
-    if(serverQueue.loop){
+    if (serverQueue.loop) {
       Music.toggleLoop(serverQueue);
     }
     serverQueue.connection?.dispatcher?.end();

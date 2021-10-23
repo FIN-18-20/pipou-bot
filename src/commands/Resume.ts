@@ -14,12 +14,12 @@ export default new Command({
       return;
     }
     if (!message.member?.voice.channel) {
-      message.channel.send(
-        'You have to be in a voice channel to play music!',
-      );
+      message.channel.send('You have to be in a voice channel to play music!');
       return;
     }
     Music.resume(serverQueue);
-    message.channel.send(`Resuming the song: **${serverQueue.songs[0].title}**`);
+    message.channel.send(
+      `Resuming the song: **${serverQueue.songs[0].title}**`,
+    );
   },
 });

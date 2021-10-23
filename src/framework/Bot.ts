@@ -114,18 +114,25 @@ export class Bot {
   private verifyCommands() {
     this._commands.forEach((command, commandIndex) => {
       this._commands.forEach((otherCommand, otherCommandIndex) => {
-        if (command.name === otherCommand.name && commandIndex !== otherCommandIndex) {
-          throw new Error(`Bot has duplicated commands! ${command.name} already exists.`);
+        if (
+          command.name === otherCommand.name &&
+          commandIndex !== otherCommandIndex
+        ) {
+          throw new Error(
+            `Bot has duplicated commands! ${command.name} already exists.`,
+          );
         }
         command.alias?.forEach((alias) => {
           otherCommand.alias?.forEach((otherAlias) => {
             if (alias === otherAlias && commandIndex !== otherCommandIndex) {
-              throw new Error(`Bot has duplicated alias for command ${command.name}! alias ${alias} from ${otherCommand.name} already exists. `);
+              throw new Error(
+                `Bot has duplicated alias for command ${command.name}! alias ${alias} from ${otherCommand.name} already exists. `,
+              );
             }
-          })
-        })
+          });
+        });
       });
-    })
+    });
   }
 
   private startCommands() {

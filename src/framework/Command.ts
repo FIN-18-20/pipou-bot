@@ -85,7 +85,7 @@ export class Command extends Base {
     }
   }
 
-  public get alias() : Array<string> | undefined {
+  public get alias(): Array<string> | undefined {
     return this._alias;
   }
 
