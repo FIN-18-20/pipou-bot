@@ -8,7 +8,7 @@ export default new Cron({
   name: 'Menu',
   description:
     'Check each day the lunch menu and post it in the #menu channel.',
-  schedule: '0 8 * * 1-5',
+  schedule: '0 6 * * 1-5',
   async handle({ client, logger }) {
     const menus = await getTodayMenu();
     if (!menus) {
