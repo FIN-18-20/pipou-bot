@@ -21,14 +21,19 @@ export default new Command({
       );
       return;
     }
-    if (!serverQueue || isNaN(index) ||(serverQueue.songs.length -1) < index || index <= 0) {
+    if (
+      !serverQueue ||
+      isNaN(index) ||
+      serverQueue.songs.length - 1 < index ||
+      index <= 0
+    ) {
       message.channel.send('This is not possible to skip to this!');
       return;
     }
-    if(serverQueue.loop){
+    if (serverQueue.loop) {
       Music.toggleLoop(serverQueue);
     }
-    serverQueue.songs.splice(0,index-1);
+    serverQueue.songs.splice(0, index - 1);
     serverQueue.connection?.dispatcher?.end();
   },
 });
