@@ -34,6 +34,5 @@ export default new Command({
       Music.toggleLoop(serverQueue);
     }
     serverQueue.songs.splice(index, 1);
-    serverQueue.connection?.dispatcher?.end();
   },
 });
