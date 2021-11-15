@@ -30,9 +30,6 @@ export default new Command({
       message.channel.send('This is not possible to remove this!');
       return;
     }
-    if (serverQueue.loop) {
-      Music.toggleLoop(serverQueue);
-    }
     serverQueue.songs.splice(index, 1);
   },
 });
