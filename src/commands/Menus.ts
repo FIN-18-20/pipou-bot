@@ -48,7 +48,7 @@ export default new Command({
     Object.values(response).map((menus, i) => {
       embed.addField(
         '-'.repeat(71),
-        `**${capitalize(Info.weekdays('long')[i])}**`,
+        `**${capitalize(Info.weekdays('long', { locale: 'fr-FR' })[i])}**`,
         false,
       );
       Object.entries(menus as RawMenu).map(([menuName, content]) => {
