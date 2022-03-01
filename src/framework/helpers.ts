@@ -64,3 +64,7 @@ export function splitArray<T>(array: Array<T>, size: number): Array<Array<T>> {
     arrayOfArrays.push(array.slice(i, i + size));
   return arrayOfArrays;
 }
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
